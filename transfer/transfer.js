@@ -1,4 +1,5 @@
 import { folderOptions, indexTree } from '../lib/bookmarks-model.js';
+import { initI18n, LANGUAGE_KEY, localizeDocument, plural, t } from '../lib/i18n.js';
 import { parseBookmarksHtml, planImport, serializeBookmarks } from '../lib/transfer.js';
 import { exactKey } from '../lib/urls.js';
 import { h } from '../popup/dom.js';
@@ -46,7 +47,7 @@ async function exportBookmarks() {
   }
   const count = countBookmarks(nodes);
   saveFile(`bookmarks-${today()}.html`, serializeBookmarks(nodes));
-  status.textContent = `已导出 ${count} 个书签`;
+  status.textContent = plural('exported_count', count);
 }
 
 /* Import */
@@ -62,12 +63,13 @@ async function existingUrls() {
 }
 
 function describePlan({ bookmarks, folders, duplicates, scripts, invalid }, includeScripts) {
-  const found = `将导入 ${bookmarks} 个书签${folders ? `、${folders} 个文件夹` : ''}`;
+  const found = `${plural('plan_bookmarks', bookmarks)}${folders ? plural('plan_folders', folders) : ''}`;
   const skipped = [];
-  if (duplicates) skipped.push(`${duplicates} 个已有的网址`);
-  if (scripts && !includeScripts) skipped.push(`${scripts} 个小书签`);
-  if (invalid) skipped.push(`${invalid} 个无效网址`);
-  return skipped.length ? `${found}，跳过 ${skipped.join('、')}。` : `${found}。`;
+  if (duplicates) skipped.push(plural('plan_skip_existing', duplicates));
+  if (scripts && !includeScripts) skipped.push(plural('plan_skip_scripts', scripts));
+  if (invalid) skipped.push(plural('plan_skip_invalid', invalid));
+  const skipping = skipped.length ? t('plan_skipping', skipped.join(t('list_separator'))) : '';
+  return `${found}${skipping}${t('sentence_end')}`;
 }
 
 async function updatePlan() {
@@ -80,8 +82,8 @@ async function updatePlan() {
   const { counts } = plan;
   $('import-summary').textContent = describePlan(counts, includeScripts);
   $('import-scripts-option').hidden = counts.scripts === 0;
-  $('import-scripts-label').textContent = `也导入 ${counts.scripts} 个小书签（点击时会运行代码，只导入你信任的文件）`;
-  $('import-button').textContent = `导入 ${counts.bookmarks} 个书签`;
+  $('import-scripts-label').textContent = plural('import_scripts_option', counts.scripts);
+  $('import-button').textContent = plural('import_button', counts.bookmarks);
   $('import-button').disabled = counts.bookmarks === 0 && counts.folders === 0;
 }
 
@@ -96,11 +98,11 @@ async function chooseFile() {
 
   const tree = parseBookmarksHtml(await file.text());
   if (!tree.length) {
-    $('import-error').textContent = '这个文件里没有找到书签。请选择浏览器导出的书签 HTML 文件。';
+    $('import-error').textContent = t('import_no_bookmarks');
     return;
   }
   parsedTree = tree;
-  $('import-name').value = `导入的书签 ${today()}`;
+  $('import-name').value = t('import_default_folder', today());
   $('import-options').hidden = false;
   await updatePlan();
 }
@@ -130,7 +132,7 @@ async function runImport() {
   // Taken again now, in case bookmarks changed while the options were on screen.
   await updatePlan();
   const { items, counts } = plan;
-  const title = $('import-name').value.trim() || `导入的书签 ${today()}`;
+  const title = $('import-name').value.trim() || t('import_default_folder', today());
 
   importing = true;
   $('import-error').textContent = '';
@@ -143,8 +145,8 @@ async function runImport() {
     lastImportedFolderId = folder.id;
     const progress = { created: 0, failed: 0 };
     await createItems(items, folder.id, progress);
-    const failed = progress.failed ? `，${progress.failed} 个失败` : '';
-    $('import-result-text').textContent = `已把 ${progress.created} 个书签导入到“${title}”${failed}。`;
+    const failed = progress.failed ? t('imported_failed', progress.failed) : '';
+    $('import-result-text').textContent = `${plural('imported', progress.created, title)}${failed}${t('sentence_end')}`;
     $('import-undo').hidden = false;
     $('import-result').hidden = false;
   } finally {
@@ -160,7 +162,7 @@ async function undoImport() {
   if (!lastImportedFolderId) return;
   await chrome.bookmarks.removeTree(lastImportedFolderId);
   lastImportedFolderId = null;
-  $('import-result-text').textContent = '已撤销这次导入。';
+  $('import-result-text').textContent = t('import_undone');
   $('import-undo').hidden = true;
 }
 
@@ -172,15 +174,17 @@ function reportingErrors(element, action) {
       await action();
     } catch (error) {
       console.error(error);
-      element.textContent = `操作失败：${error.message}`;
+      element.textContent = t('action_failed', error.message);
     }
   };
 }
 
 async function init() {
+  await initI18n();
+  localizeDocument();
   const roots = await chrome.bookmarks.getTree();
 
-  $('export-scope').replaceChildren(h('option', { value: '' }, '全部书签'), ...folderOptionElements(roots));
+  $('export-scope').replaceChildren(h('option', { value: '' }, t('all_bookmarks')), ...folderOptionElements(roots));
   $('import-parent').replaceChildren(...folderOptionElements(roots));
   // "Other bookmarks" when it's there, so an import doesn't crowd the bookmarks bar.
   const topLevel = roots[0].children.filter((folder) => !folder.unmodifiable);
@@ -194,6 +198,9 @@ async function init() {
   $('import-button').addEventListener('click', reportingErrors(onError, runImport));
   $('import-undo').addEventListener('click', reportingErrors(onError, undoImport));
 
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes[LANGUAGE_KEY] && !importing) location.reload();
+  });
   window.addEventListener('beforeunload', (event) => {
     if (importing) event.preventDefault();
   });

@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="color-scheme" content="light dark" />
-    <title>书签管家</title>
+    <title data-i18n="extension_name"></title>
     <link rel="stylesheet" href="popup.css" />
     <script type="module" src="popup.js"></script>
   </head>
@@ -18,47 +18,52 @@
       <symbol id="i-transfer" viewBox="0 0 16 16"><path d="M5 13V3M5 3 2.5 5.5M5 3l2.5 2.5M11 3v10M11 13l-2.5-2.5M11 13l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
       <symbol id="i-select" viewBox="0 0 16 16"><path d="M3.25 2.75h9.5c.3 0 .5.2.5.5v9.5c0 .3-.2.5-.5.5h-9.5a.5.5 0 0 1-.5-.5v-9.5c0-.3.2-.5.5-.5zM5.5 8l2 2 3.25-3.75" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
       <symbol id="i-help" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.3" /><path d="M6.1 6.2a1.95 1.95 0 1 1 3 1.65c-.7.45-1.1.85-1.1 1.65" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8" cy="11.6" r=".8" fill="currentColor" /></symbol>
+      <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.3" /><path d="M1.75 8h12.5M8 1.75c1.8 1.7 2.7 3.8 2.7 6.25S9.8 12.55 8 14.25C6.2 12.55 5.3 10.45 5.3 8S6.2 3.45 8 1.75z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" /></symbol>
       <symbol id="i-external" viewBox="0 0 16 16"><path d="M9.5 2.75h3.75V6.5M13 3l-6 6M7 3.5H3.25v9.25h9.25V9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
     </svg>
 
-    <nav class="tabs" aria-label="视图">
-      <button type="button" class="tab" data-view="bookmarks">书签</button>
-      <button type="button" class="tab" data-view="cleanup">清理</button>
-      <button type="button" id="open-help" class="icon-button small tabs-end" title="快捷键（?）" aria-label="快捷键"><svg class="icon"><use href="#i-help" /></svg></button>
-      <button type="button" id="open-transfer" class="icon-button small" title="导入和导出" aria-label="导入和导出"><svg class="icon"><use href="#i-transfer" /></svg></button>
+    <nav class="tabs" data-i18n-aria-label="nav_views">
+      <button type="button" class="tab" data-view="bookmarks" data-i18n="tab_bookmarks"></button>
+      <button type="button" class="tab" data-view="cleanup" data-i18n="tab_cleanup"></button>
+      <label class="language tabs-end" data-i18n-title="language_label">
+        <svg class="icon" aria-hidden="true"><use href="#i-globe" /></svg>
+        <select id="language" data-i18n-aria-label="language_label"></select>
+      </label>
+      <button type="button" id="open-help" class="icon-button small" data-i18n-title="shortcuts_hint" data-i18n-aria-label="shortcuts"><svg class="icon"><use href="#i-help" /></svg></button>
+      <button type="button" id="open-transfer" class="icon-button small" data-i18n-title="import_export" data-i18n-aria-label="import_export"><svg class="icon"><use href="#i-transfer" /></svg></button>
     </nav>
 
     <main>
-      <section id="bookmarks-panel" class="panel" aria-label="书签">
+      <section id="bookmarks-panel" class="panel" data-i18n-aria-label="tab_bookmarks">
         <div class="toolbar">
-          <input id="search" type="search" placeholder="搜索标题、网址或文件夹" aria-label="搜索书签" autocomplete="off" spellcheck="false" />
-          <button type="button" id="select-mode" class="icon-button" title="多选" aria-label="多选" aria-pressed="false"><svg class="icon"><use href="#i-select" /></svg></button>
-          <button type="button" id="add-page" class="icon-button" title="收藏当前页" aria-label="收藏当前页"><svg class="icon"><use href="#i-star-plus" /></svg></button>
-          <button type="button" id="add-folder" class="icon-button" title="新建文件夹" aria-label="新建文件夹"><svg class="icon"><use href="#i-folder-plus" /></svg></button>
+          <input id="search" type="search" data-i18n-placeholder="search_placeholder" data-i18n-aria-label="search_label" autocomplete="off" spellcheck="false" />
+          <button type="button" id="select-mode" class="icon-button" data-i18n-title="multi_select" data-i18n-aria-label="multi_select" aria-pressed="false"><svg class="icon"><use href="#i-select" /></svg></button>
+          <button type="button" id="add-page" class="icon-button" data-i18n-title="add_current_page" data-i18n-aria-label="add_current_page"><svg class="icon"><use href="#i-star-plus" /></svg></button>
+          <button type="button" id="add-folder" class="icon-button" data-i18n-title="new_folder" data-i18n-aria-label="new_folder"><svg class="icon"><use href="#i-folder-plus" /></svg></button>
         </div>
-        <nav id="crumbs-nav" aria-label="文件夹路径"><ol id="crumbs" class="crumbs"></ol></nav>
+        <nav id="crumbs-nav" data-i18n-aria-label="folder_path"><ol id="crumbs" class="crumbs"></ol></nav>
         <div id="bookmarks-body" class="scroller"></div>
         <div id="selection-bar" class="footer" hidden>
           <span id="selection-count" role="status"></span>
           <div class="footer-actions">
             <button type="button" id="selection-all" class="button compact"></button>
-            <button type="button" id="selection-move" class="button compact">移动</button>
-            <button type="button" id="selection-delete" class="button compact danger">删除</button>
-            <button type="button" id="selection-done" class="button compact">完成</button>
+            <button type="button" id="selection-move" class="button compact" data-i18n="move"></button>
+            <button type="button" id="selection-delete" class="button compact danger" data-i18n="delete"></button>
+            <button type="button" id="selection-done" class="button compact" data-i18n="done"></button>
           </div>
         </div>
       </section>
 
-      <section id="cleanup-panel" class="panel" aria-label="清理" hidden>
-        <div class="segments" role="group" aria-label="清理类型">
-          <button type="button" class="segment" data-mode="duplicates">重复书签</button>
-          <button type="button" class="segment" data-mode="dead">失效链接</button>
-          <button type="button" class="segment" data-mode="empty">空文件夹</button>
+      <section id="cleanup-panel" class="panel" data-i18n-aria-label="tab_cleanup" hidden>
+        <div class="segments" role="group" data-i18n-aria-label="cleanup_types">
+          <button type="button" class="segment" data-mode="duplicates" data-i18n="segment_duplicates"></button>
+          <button type="button" class="segment" data-mode="dead" data-i18n="segment_dead"></button>
+          <button type="button" class="segment" data-mode="empty" data-i18n="segment_empty"></button>
         </div>
         <div id="cleanup-body" class="scroller"></div>
         <div id="cleanup-footer" class="footer" hidden>
           <span id="cleanup-count" role="status"></span>
-          <button type="button" id="cleanup-delete" class="button danger">删除所选</button>
+          <button type="button" id="cleanup-delete" class="button danger" data-i18n="delete_selected"></button>
         </div>
       </section>
     </main>
@@ -66,38 +71,38 @@
     <div id="notice" class="notice" role="status" hidden>
       <span id="notice-text"></span>
       <button type="button" id="notice-action" class="link-button" hidden></button>
-      <button type="button" id="notice-close" class="link-button" aria-label="关闭提示">×</button>
+      <button type="button" id="notice-close" class="link-button" data-i18n-aria-label="close_notice">×</button>
     </div>
 
     <dialog id="edit-dialog" aria-labelledby="edit-title" closedby="closerequest">
       <form id="edit-form" novalidate>
         <h2 id="edit-title"></h2>
         <label class="field">
-          <span>名称</span>
+          <span data-i18n="field_name"></span>
           <input id="edit-name" type="text" autocomplete="off" />
         </label>
         <label class="field" id="edit-url-field">
-          <span>网址</span>
+          <span data-i18n="field_url"></span>
           <input id="edit-url" type="text" inputmode="url" autocomplete="off" spellcheck="false" />
         </label>
         <label class="field">
-          <span>所在文件夹</span>
+          <span data-i18n="field_folder"></span>
           <select id="edit-folder"></select>
         </label>
         <p id="edit-error" class="form-error" role="alert"></p>
         <div class="dialog-actions">
-          <button type="button" id="edit-cancel" class="button">取消</button>
-          <button type="submit" class="button primary">保存</button>
+          <button type="button" id="edit-cancel" class="button" data-i18n="cancel"></button>
+          <button type="submit" class="button primary" data-i18n="save"></button>
         </div>
       </form>
     </dialog>
 
     <dialog id="help-dialog" aria-labelledby="help-title" closedby="any">
       <form method="dialog">
-        <h2 id="help-title">快捷键</h2>
+        <h2 id="help-title" data-i18n="shortcuts"></h2>
         <div id="help-list"></div>
         <div class="dialog-actions">
-          <button class="button" autofocus>知道了</button>
+          <button class="button" autofocus data-i18n="got_it"></button>
         </div>
       </form>
     </dialog>
@@ -106,17 +111,17 @@
       <form id="move-form" novalidate>
         <h2 id="move-title"></h2>
         <label class="field">
-          <span>移到</span>
+          <span data-i18n="move_to"></span>
           <select id="move-folder"></select>
         </label>
         <label class="field">
-          <span>在这里新建文件夹（可选）</span>
+          <span data-i18n="move_new_folder"></span>
           <input id="move-new-folder" type="text" autocomplete="off" />
         </label>
         <p id="move-error" class="form-error" role="alert"></p>
         <div class="dialog-actions">
-          <button type="button" id="move-cancel" class="button">取消</button>
-          <button type="submit" class="button primary">移动</button>
+          <button type="button" id="move-cancel" class="button" data-i18n="cancel"></button>
+          <button type="submit" class="button primary" data-i18n="move"></button>
         </div>
       </form>
     </dialog>
@@ -126,7 +131,7 @@
         <h2 id="confirm-title"></h2>
         <p id="confirm-message"></p>
         <div class="dialog-actions">
-          <button value="cancel" class="button" autofocus>取消</button>
+          <button value="cancel" class="button" autofocus data-i18n="cancel"></button>
           <button value="confirm" id="confirm-accept" class="button danger"></button>
         </div>
       </form>

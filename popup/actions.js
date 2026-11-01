@@ -1,5 +1,7 @@
 // Deleting a bookmark through the API is permanent, so every delete first saves
 // a snapshot. It's kept in storage because the popup can close at any moment.
+import { t } from '../lib/i18n.js';
+
 const UNDO_KEY = 'undoSnapshot';
 const UNDO_WINDOW_MS = 10 * 60 * 1000;
 
@@ -143,7 +145,7 @@ export async function undoMoves(origins) {
 
 export async function openUrl(url, { active = true } = {}) {
   // Chrome refuses these from extensions, with an error that's no use to a reader.
-  if (/^javascript:/i.test(url)) throw new Error('小书签只能从 Chrome 书签栏运行');
+  if (/^javascript:/i.test(url)) throw new Error(t('bookmarklet_blocked'));
   await chrome.tabs.create({ url, active });
   if (active) window.close();
 }

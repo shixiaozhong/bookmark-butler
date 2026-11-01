@@ -1,31 +1,32 @@
 import { findEmptyFolders } from '../lib/bookmarks-model.js';
 import { findDuplicates } from '../lib/duplicates.js';
+import { plural, t, textLocale } from '../lib/i18n.js';
 import { Kind } from '../lib/link-check.js';
 import { checkRow, h, icon } from './dom.js';
 
 const JOB_KEY = 'linkCheckJob';
 
-const DEAD_GROUPS = [
+const deadGroups = () => [
   {
     kind: Kind.DEAD,
-    title: '已失效',
-    note: '服务器明确返回页面不存在。',
+    title: t('dead_title'),
+    note: t('dead_note'),
   },
   {
     kind: Kind.UNREACHABLE,
-    title: '无法连接',
-    note: '可能是域名或服务器已下线，也可能只是当前网络或代理访问不了，建议先确认。',
+    title: t('unreachable_title'),
+    note: t('unreachable_note'),
   },
   {
     kind: Kind.UNCERTAIN,
-    title: '不确定',
-    note: '站点拒绝了检测或响应超时，页面不一定失效，建议先打开看看。',
+    title: t('uncertain_title'),
+    note: t('uncertain_note'),
   },
 ];
 
 function describeResult(result) {
-  if (result.reason === 'timeout') return '响应超时';
-  if (result.reason === 'network') return '无法连接';
+  if (result.reason === 'timeout') return t('reason_timeout');
+  if (result.reason === 'network') return t('unreachable_title');
   return `HTTP ${result.status}`;
 }
 
@@ -57,7 +58,7 @@ export function createCleanupView(app) {
       if (!visibleIds.has(id)) selection.delete(id);
     }
     footer.hidden = visibleIds.size === 0;
-    countLabel.textContent = `已选 ${selection.size} 项`;
+    countLabel.textContent = t('selected_count', selection.size);
     deleteButton.disabled = selection.size === 0;
   }
 
@@ -80,7 +81,7 @@ export function createCleanupView(app) {
     const visibleIds = new Set(groups.flatMap((group) => group.items.map((item) => item.id)));
     updateFooter(visibleIds);
     if (!groups.length) {
-      body.replaceChildren(h('p', { class: 'empty' }, '没有发现重复书签'));
+      body.replaceChildren(h('p', { class: 'empty' }, t('no_duplicates')));
       return;
     }
     const sections = groups.map((group) =>
@@ -90,16 +91,16 @@ export function createCleanupView(app) {
         h(
           'div',
           { class: 'group-header' },
-          h('h3', {}, group.exact ? '完全相同' : '网址相似'),
+          h('h3', {}, group.exact ? t('duplicates_identical') : t('duplicates_similar')),
           h('span', { class: 'spacer' }),
-          h('span', { class: 'meta' }, `${group.items.length} 个`),
+          h('span', { class: 'meta' }, t('duplicates_copies', group.items.length)),
         ),
         group.items.map((item, position) =>
           checkRow({
             url: item.url,
             title: item.title,
             meta: `${item.path} · ${item.url}`,
-            tag: position === 0 ? '最早' : null,
+            tag: position === 0 ? t('duplicates_oldest') : null,
             checked: duplicateSelection.has(item.id),
             onChange: (checked) => {
               if (checked) duplicateSelection.add(item.id);
@@ -114,7 +115,7 @@ export function createCleanupView(app) {
       h(
         'p',
         { class: 'hint' },
-        `发现 ${groups.length} 组。已默认勾选完全相同的副本，每组保留最早收藏的一条；网址相似的不会默认勾选。`,
+        plural('duplicates_summary', groups.length),
       ),
       ...sections,
     );
@@ -132,18 +133,18 @@ export function createCleanupView(app) {
     const visibleIds = new Set(folders.map((folder) => folder.id));
     updateFooter(visibleIds);
     if (!folders.length) {
-      body.replaceChildren(h('p', { class: 'empty' }, '没有发现空文件夹'));
+      body.replaceChildren(h('p', { class: 'empty' }, t('no_empty_folders')));
       return;
     }
     body.replaceChildren(
-      h('p', { class: 'hint' }, `发现 ${folders.length} 个文件夹，里面没有任何书签。如果有想留着备用的，取消勾选就好。`),
+      h('p', { class: 'hint' }, plural('empty_summary', folders.length)),
       h(
         'section',
         { class: 'group' },
         folders.map((folder) =>
           checkRow({
             title: folder.title,
-            meta: folder.subfolders ? `${folder.path} · 含 ${folder.subfolders} 个空的子文件夹` : folder.path,
+            meta: folder.subfolders ? plural('empty_subfolders', folder.subfolders, folder.path) : folder.path,
             leading: icon('folder', 'folder-icon'),
             checked: emptySelection.has(folder.id),
             onChange: (checked) => {
@@ -167,7 +168,7 @@ export function createCleanupView(app) {
   function sendScanCommand(type) {
     app.run(async () => {
       const response = await chrome.runtime.sendMessage({ type });
-      if (!response?.ok) throw new Error(response?.error ?? '后台没有响应');
+      if (!response?.ok) throw new Error(response?.error ?? t('no_response'));
     });
   }
 
@@ -180,10 +181,10 @@ export function createCleanupView(app) {
   }
 
   function describeFinishedScan(results) {
-    const when = new Date(job.finishedAt).toLocaleString('zh-CN');
-    const skipped = job.skipped ? `，跳过 ${job.skipped} 个内网或非网页地址` : '';
-    const found = results.length ? `发现 ${results.length} 个问题` : '没有发现问题';
-    return `${when} 检测了 ${job.total} 个网址${skipped}，${found}。`;
+    const when = new Date(job.finishedAt).toLocaleString(textLocale());
+    const skipped = job.skipped ? plural('scan_skipped', job.skipped) : '';
+    const found = results.length ? plural('scan_found', results.length) : t('scan_clean');
+    return `${plural('scan_checked', job.total, when)}${skipped}${found}`;
   }
 
   function scanCard(results) {
@@ -191,12 +192,12 @@ export function createCleanupView(app) {
       return h(
         'div',
         { class: 'scan-card' },
-        h('p', {}, '逐个访问书签网址，找出打不开的链接。检测在后台进行，关闭弹窗也不会中断，不会带上你的登录状态。'),
-        h('div', { class: 'scan-actions' }, scanButton('开始检测', 'link-check:start', true)),
+        h('p', {}, t('scan_intro')),
+        h('div', { class: 'scan-actions' }, scanButton(t('scan_start'), 'link-check:start', true)),
       );
     }
     if (job.status === 'running') {
-      const progress = h('progress', { class: 'scan-progress', max: job.total, value: job.checked, 'aria-label': '检测进度' });
+      const progress = h('progress', { class: 'scan-progress', max: job.total, value: job.checked, 'aria-label': t('scan_progress') });
       const text = h('p', { role: 'status' });
       progressEls = { progress, text };
       updateProgress();
@@ -205,30 +206,30 @@ export function createCleanupView(app) {
         { class: 'scan-card' },
         progress,
         text,
-        h('div', { class: 'scan-actions' }, scanButton('停止', 'link-check:stop')),
+        h('div', { class: 'scan-actions' }, scanButton(t('scan_stop'), 'link-check:stop')),
       );
     }
     if (job.status === 'stopped') {
-      const reason = job.stopReason === 'offline' ? '网络已断开，检测已暂停。' : '检测已停止。';
+      const reason = job.stopReason === 'offline' ? t('scan_offline') : t('scan_stopped');
       return h(
         'div',
         { class: 'scan-card' },
-        h('p', { role: 'status' }, `${reason}已完成 ${job.checked} / ${job.total}。`),
-        h('div', { class: 'scan-actions' }, scanButton('继续', 'link-check:resume', true), scanButton('重新开始', 'link-check:start')),
+        h('p', { role: 'status' }, t('scan_stopped_progress', job.checked, job.total, reason)),
+        h('div', { class: 'scan-actions' }, scanButton(t('scan_resume'), 'link-check:resume', true), scanButton(t('scan_restart'), 'link-check:start')),
       );
     }
     return h(
       'div',
       { class: 'scan-card' },
       h('p', { role: 'status' }, describeFinishedScan(results)),
-      h('div', { class: 'scan-actions' }, scanButton('重新检测', 'link-check:start')),
+      h('div', { class: 'scan-actions' }, scanButton(t('scan_recheck'), 'link-check:start')),
     );
   }
 
   function updateProgress() {
     if (!progressEls || job?.status !== 'running') return;
     progressEls.progress.value = job.checked;
-    progressEls.text.textContent = `正在检测 ${job.checked} / ${job.total}，可以关闭弹窗`;
+    progressEls.text.textContent = t('scan_running', job.checked, job.total);
   }
 
   function deadRow(result, visibleIds, onToggle) {
@@ -250,8 +251,8 @@ export function createCleanupView(app) {
         {
           type: 'button',
           class: 'icon-button small',
-          title: '在后台打开确认',
-          'aria-label': `在后台打开“${result.title || result.url}”`,
+          title: t('open_to_check'),
+          'aria-label': t('open_item_background', result.title || result.url),
           onclick: (event) => {
             event.preventDefault();
             app.run(() => app.openUrl(result.url, { active: false }));
@@ -283,7 +284,7 @@ export function createCleanupView(app) {
       },
     );
     const updateLabel = () => {
-      selectAll.textContent = allSelected() ? '取消全选' : '全选';
+      selectAll.textContent = allSelected() ? t('deselect_all') : t('select_all');
     };
     updateLabel();
     return h(
@@ -292,7 +293,7 @@ export function createCleanupView(app) {
       h(
         'div',
         { class: 'group-header' },
-        h('h3', {}, `${title}（${members.length}）`),
+        h('h3', {}, t('group_title', title, members.length)),
         h('span', { class: 'spacer' }),
         selectAll,
       ),
@@ -316,7 +317,7 @@ export function createCleanupView(app) {
     const { scrollTop } = body;
     body.replaceChildren(
       scanCard(results),
-      ...DEAD_GROUPS.map((group) => deadGroup(group, results, visibleIds)).filter(Boolean),
+      ...deadGroups().map((group) => deadGroup(group, results, visibleIds)).filter(Boolean),
     );
     body.scrollTop = scrollTop;
 
@@ -341,21 +342,21 @@ export function createCleanupView(app) {
 
     if (mode === 'empty') {
       const removed = await app.removeNodes(ids, {
-        title: '删除所选文件夹？',
-        message: `将删除 ${ids.length} 个空文件夹。`,
+        title: t('delete_folders_title'),
+        message: plural('delete_empty_folders', ids.length),
       });
       if (removed) selection.clear();
       return;
     }
 
-    let message = `将删除 ${ids.length} 个书签。`;
+    let message = plural('delete_bookmarks', ids.length);
     if (mode === 'duplicates') {
       const wiped = findDuplicates(app.index.bookmarks).filter((group) =>
         group.items.every((item) => selection.has(item.id)),
       ).length;
-      if (wiped) message += `其中 ${wiped} 组的所有副本都被勾选，这些书签一条都不会保留。`;
+      if (wiped) message += plural('delete_all_copies', wiped);
     }
-    const removed = await app.removeNodes(ids, { title: '删除所选书签？', message });
+    const removed = await app.removeNodes(ids, { title: t('delete_bookmarks_title'), message });
     if (removed) selection.clear();
   }
 

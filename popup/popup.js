@@ -1,9 +1,14 @@
 import { canHoldChildren, canModify, indexTree } from '../lib/bookmarks-model.js';
+import { AUTO, getLanguage, initI18n, LANGUAGES, localizeDocument, plural, setLanguage, t } from '../lib/i18n.js';
 import { parseHttpUrl } from '../lib/urls.js';
 import { discardUndo, getUndoSnapshot, openUrl, removeWithUndo, undoRemove } from './actions.js';
 import { createBookmarksView } from './bookmarks-view.js';
 import { createCleanupView } from './cleanup-view.js';
+import { h } from './dom.js';
 import { confirmDialog, createBookmarkDialog, createFolderDialog, editNodeDialog, initEditDialog, initEscapeKey, initShortcutHelp } from './dialogs.js';
+
+await initI18n();
+localizeDocument();
 
 const UI_KEY = 'uiState';
 
@@ -21,7 +26,7 @@ const app = {
       return await action();
     } catch (error) {
       console.error(error);
-      showNotice(`操作失败：${error.message}`);
+      showNotice(t('action_failed', error.message));
       return undefined;
     }
   },
@@ -42,8 +47,8 @@ const app = {
     }
     const count = app.index.nodes.get(node.id)?.count ?? 0;
     await app.removeNodes([node.id], {
-      title: `删除文件夹“${node.title}”？`,
-      message: count ? `里面的 ${count} 个书签也会一起删除。` : '这个文件夹是空的。',
+      title: t('delete_folder_title', node.title),
+      message: count ? plural('delete_folder_contents', count) : t('delete_folder_empty'),
     });
   },
 
@@ -51,8 +56,8 @@ const app = {
   async removeNodes(ids, { title, message }) {
     const confirmed = await confirmDialog({
       title,
-      message: `${message}删除后 10 分钟内可以撤销。`,
-      confirmLabel: '删除',
+      message: `${message}${t('undo_window')}`,
+      confirmLabel: t('delete'),
     });
     if (!confirmed) return false;
     await removeAndOfferUndo(ids);
@@ -109,11 +114,11 @@ document.getElementById('notice-close').addEventListener('click', () => {
 });
 
 function offerUndo(count) {
-  showNotice(`已删除 ${count} 项`, {
-    actionLabel: '撤销',
+  showNotice(plural('deleted_count', count), {
+    actionLabel: t('undo'),
     onAction: async () => {
       const restored = await undoRemove();
-      showNotice(restored ? `已恢复 ${restored} 项` : '没有可恢复的内容');
+      showNotice(restored ? plural('restored_count', restored) : t('nothing_to_restore'));
     },
     onClose: discardUndo,
   });
@@ -121,7 +126,7 @@ function offerUndo(count) {
 
 async function removeAndOfferUndo(ids) {
   const { removed, failed } = await removeWithUndo(ids);
-  if (failed) showNotice(`已删除 ${removed} 项，${failed} 项删除失败`);
+  if (failed) showNotice(t('delete_partial', removed, failed));
   else offerUndo(removed);
 }
 
@@ -211,11 +216,30 @@ document.getElementById('add-folder').addEventListener('click', () => {
   createFolderDialog({ roots: app.roots, parentId: targetFolderId() });
 });
 
+/* Language */
+
+async function initLanguagePicker() {
+  const picker = document.getElementById('language');
+  picker.replaceChildren(
+    h('option', { value: AUTO }, t('language_auto')),
+    ...Object.entries(LANGUAGES).map(([code, name]) => h('option', { value: code }, name)),
+  );
+  picker.value = await getLanguage();
+  picker.addEventListener('change', () => {
+    // Text is everywhere and much of it is built as needed, so a reload is the reliable way to swap it.
+    app.run(async () => {
+      await setLanguage(picker.value);
+      location.reload();
+    });
+  });
+}
+
 /* Startup */
 
 async function init() {
   initEditDialog();
   initEscapeKey();
+  await initLanguagePicker();
   initShortcutHelp();
   app.roots = await chrome.bookmarks.getTree();
   app.index = indexTree(app.roots);

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { isMacPlatform, opensShortcutHelp, shortcutGroups } from '../lib/shortcuts.js';
 
-const allKeys = (isMac) => shortcutGroups(isMac).flatMap((group) => group.items.flatMap((item) => item.keys));
+const allKeys = (isMac) => shortcutGroups(isMac, (key) => key).flatMap((group) => group.items.flatMap((item) => item.keys));
 
 test('isMacPlatform recognises the values browsers report', () => {
   assert.equal(isMacPlatform('macOS'), true);
@@ -24,7 +24,7 @@ test('labels match the keys on other keyboards', () => {
 });
 
 test('every entry says what it does', () => {
-  for (const group of shortcutGroups(true)) {
+  for (const group of shortcutGroups(true, (key) => key)) {
     assert.ok(group.title);
     for (const { keys, action } of group.items) {
       assert.ok(keys.length > 0);

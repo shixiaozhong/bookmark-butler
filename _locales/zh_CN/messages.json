@@ -1,0 +1,488 @@
+{
+  "locale_code": {
+    "message": "zh-CN"
+  },
+  "extension_name": {
+    "message": "书签管家"
+  },
+  "omnibox_default": {
+    "message": "搜索书签：<match>%s</match>"
+  },
+  "nav_views": {
+    "message": "视图"
+  },
+  "tab_bookmarks": {
+    "message": "书签"
+  },
+  "tab_cleanup": {
+    "message": "清理"
+  },
+  "shortcuts": {
+    "message": "快捷键"
+  },
+  "shortcuts_hint": {
+    "message": "快捷键（?）"
+  },
+  "import_export": {
+    "message": "导入和导出"
+  },
+  "search_placeholder": {
+    "message": "搜索标题、网址或文件夹"
+  },
+  "search_label": {
+    "message": "搜索书签"
+  },
+  "multi_select": {
+    "message": "多选"
+  },
+  "add_current_page": {
+    "message": "收藏当前页"
+  },
+  "new_folder": {
+    "message": "新建文件夹"
+  },
+  "folder_path": {
+    "message": "文件夹路径"
+  },
+  "move": {
+    "message": "移动"
+  },
+  "delete": {
+    "message": "删除"
+  },
+  "done": {
+    "message": "完成"
+  },
+  "cleanup_types": {
+    "message": "清理类型"
+  },
+  "segment_duplicates": {
+    "message": "重复书签"
+  },
+  "segment_dead": {
+    "message": "失效链接"
+  },
+  "segment_empty": {
+    "message": "空文件夹"
+  },
+  "delete_selected": {
+    "message": "删除所选"
+  },
+  "close_notice": {
+    "message": "关闭提示"
+  },
+  "field_name": {
+    "message": "名称"
+  },
+  "field_url": {
+    "message": "网址"
+  },
+  "field_folder": {
+    "message": "所在文件夹"
+  },
+  "cancel": {
+    "message": "取消"
+  },
+  "save": {
+    "message": "保存"
+  },
+  "got_it": {
+    "message": "知道了"
+  },
+  "move_to": {
+    "message": "移到"
+  },
+  "move_new_folder": {
+    "message": "在这里新建文件夹（可选）"
+  },
+  "shortcuts_group_search": {
+    "message": "搜索"
+  },
+  "shortcuts_group_browse": {
+    "message": "浏览和整理"
+  },
+  "shortcuts_group_select": {
+    "message": "多选模式"
+  },
+  "shortcuts_group_other": {
+    "message": "其他"
+  },
+  "key_enter": {
+    "message": "回车"
+  },
+  "key_arrows": {
+    "message": "方向键"
+  },
+  "key_click": {
+    "message": "点击"
+  },
+  "key_space": {
+    "message": "空格"
+  },
+  "key_keywords": {
+    "message": "关键词"
+  },
+  "shortcut_open_first": {
+    "message": "打开第一条结果"
+  },
+  "shortcut_enter_list": {
+    "message": "从搜索框进入列表"
+  },
+  "shortcut_move_focus": {
+    "message": "在图标之间移动"
+  },
+  "shortcut_open": {
+    "message": "打开书签或进入文件夹"
+  },
+  "shortcut_go_up": {
+    "message": "返回上一层"
+  },
+  "shortcut_background": {
+    "message": "在后台打开书签"
+  },
+  "shortcut_reorder": {
+    "message": "调整图标的位置"
+  },
+  "shortcut_toggle": {
+    "message": "勾选或取消勾选"
+  },
+  "shortcut_range": {
+    "message": "连续选择"
+  },
+  "shortcut_exit_select": {
+    "message": "退出多选"
+  },
+  "shortcut_address_bar": {
+    "message": "在地址栏搜索书签"
+  },
+  "shortcut_help": {
+    "message": "打开这份说明"
+  },
+  "selected_count": {
+    "message": "已选 $1 项"
+  },
+  "select_all": {
+    "message": "全选"
+  },
+  "deselect_all": {
+    "message": "取消全选"
+  },
+  "select_item": {
+    "message": "选择“$1”"
+  },
+  "delete_selection_title": {
+    "message": "删除所选内容？"
+  },
+  "delete_items_other": {
+    "message": "将删除 $1 项。"
+  },
+  "delete_items_and_contents_other": {
+    "message": "将删除 $2 项，文件夹里的 $1 个书签也会一起删除。"
+  },
+  "edit_item": {
+    "message": "编辑“$1”"
+  },
+  "delete_item": {
+    "message": "删除“$1”"
+  },
+  "folder_label_other": {
+    "message": "文件夹 $2，$1 个书签"
+  },
+  "folder_empty": {
+    "message": "这个文件夹是空的"
+  },
+  "crumb_all": {
+    "message": "全部"
+  },
+  "no_results": {
+    "message": "没有找到“$1”相关的书签"
+  },
+  "results_capped": {
+    "message": "只显示前 $1 条，共 $2 条。试试再加个关键词。"
+  },
+  "move_partial": {
+    "message": "已移动 $1 项，$2 项移动失败"
+  },
+  "moved_items": {
+    "message": "已把 $1 项移到“$2”"
+  },
+  "moved_to_folder": {
+    "message": "已移到“$1”"
+  },
+  "undo": {
+    "message": "撤销"
+  },
+  "move_undone": {
+    "message": "已撤销移动"
+  },
+  "drag_count": {
+    "message": "$1 项"
+  },
+  "bookmarklet_blocked": {
+    "message": "小书签只能从 Chrome 书签栏运行"
+  },
+  "dead_title": {
+    "message": "已失效"
+  },
+  "dead_note": {
+    "message": "服务器明确返回页面不存在。"
+  },
+  "unreachable_title": {
+    "message": "无法连接"
+  },
+  "unreachable_note": {
+    "message": "可能是域名或服务器已下线，也可能只是当前网络或代理访问不了，建议先确认。"
+  },
+  "uncertain_title": {
+    "message": "不确定"
+  },
+  "uncertain_note": {
+    "message": "站点拒绝了检测或响应超时，页面不一定失效，建议先打开看看。"
+  },
+  "reason_timeout": {
+    "message": "响应超时"
+  },
+  "no_duplicates": {
+    "message": "没有发现重复书签"
+  },
+  "duplicates_identical": {
+    "message": "完全相同"
+  },
+  "duplicates_similar": {
+    "message": "网址相似"
+  },
+  "duplicates_copies": {
+    "message": "$1 个"
+  },
+  "duplicates_oldest": {
+    "message": "最早"
+  },
+  "duplicates_summary_other": {
+    "message": "发现 $1 组。已默认勾选完全相同的副本，每组保留最早收藏的一条；网址相似的不会默认勾选。"
+  },
+  "no_empty_folders": {
+    "message": "没有发现空文件夹"
+  },
+  "empty_summary_other": {
+    "message": "发现 $1 个文件夹，里面没有任何书签。如果有想留着备用的，取消勾选就好。"
+  },
+  "empty_subfolders_other": {
+    "message": "$2 · 含 $1 个空的子文件夹"
+  },
+  "no_response": {
+    "message": "后台没有响应"
+  },
+  "scan_checked_other": {
+    "message": "$2 检测了 $1 个网址"
+  },
+  "scan_skipped_other": {
+    "message": "，跳过 $1 个内网或非网页地址"
+  },
+  "scan_found_other": {
+    "message": "，发现 $1 个问题。"
+  },
+  "scan_clean": {
+    "message": "，没有发现问题。"
+  },
+  "scan_intro": {
+    "message": "逐个访问书签网址，找出打不开的链接。检测在后台进行，关闭弹窗也不会中断，不会带上你的登录状态。"
+  },
+  "scan_start": {
+    "message": "开始检测"
+  },
+  "scan_progress": {
+    "message": "检测进度"
+  },
+  "scan_stop": {
+    "message": "停止"
+  },
+  "scan_offline": {
+    "message": "网络已断开，检测已暂停。"
+  },
+  "scan_stopped": {
+    "message": "检测已停止。"
+  },
+  "scan_stopped_progress": {
+    "message": "$3已完成 $1 / $2。"
+  },
+  "scan_resume": {
+    "message": "继续"
+  },
+  "scan_restart": {
+    "message": "重新开始"
+  },
+  "scan_recheck": {
+    "message": "重新检测"
+  },
+  "scan_running": {
+    "message": "正在检测 $1 / $2，可以关闭弹窗"
+  },
+  "open_to_check": {
+    "message": "在后台打开确认"
+  },
+  "open_item_background": {
+    "message": "在后台打开“$1”"
+  },
+  "group_title": {
+    "message": "$1（$2）"
+  },
+  "delete_folders_title": {
+    "message": "删除所选文件夹？"
+  },
+  "delete_empty_folders_other": {
+    "message": "将删除 $1 个空文件夹。"
+  },
+  "delete_bookmarks_title": {
+    "message": "删除所选书签？"
+  },
+  "delete_bookmarks_other": {
+    "message": "将删除 $1 个书签。"
+  },
+  "delete_all_copies_other": {
+    "message": "其中 $1 组的所有副本都被勾选，这些书签一条都不会保留。"
+  },
+  "move_title_other": {
+    "message": "移动 $1 项"
+  },
+  "invalid_url": {
+    "message": "请输入有效的网址"
+  },
+  "folder_name_required": {
+    "message": "请输入文件夹名称"
+  },
+  "add_bookmark": {
+    "message": "添加书签"
+  },
+  "edit_bookmark": {
+    "message": "编辑书签"
+  },
+  "edit_folder": {
+    "message": "编辑文件夹"
+  },
+  "action_failed": {
+    "message": "操作失败：$1"
+  },
+  "delete_folder_title": {
+    "message": "删除文件夹“$1”？"
+  },
+  "delete_folder_contents_other": {
+    "message": "里面的 $1 个书签也会一起删除。"
+  },
+  "delete_folder_empty": {
+    "message": "这个文件夹是空的。"
+  },
+  "undo_window": {
+    "message": "删除后 10 分钟内可以撤销。"
+  },
+  "deleted_count_other": {
+    "message": "已删除 $1 项"
+  },
+  "restored_count_other": {
+    "message": "已恢复 $1 项"
+  },
+  "nothing_to_restore": {
+    "message": "没有可恢复的内容"
+  },
+  "delete_partial": {
+    "message": "已删除 $1 项，$2 项删除失败"
+  },
+  "transfer_page_title": {
+    "message": "导入和导出书签 - 书签管家"
+  },
+  "transfer_heading": {
+    "message": "导入和导出书签"
+  },
+  "export_title": {
+    "message": "导出"
+  },
+  "export_note": {
+    "message": "保存为通用的书签 HTML 文件，可以当备份，也能导入 Chrome、Edge、Firefox 或 Safari。"
+  },
+  "export_scope": {
+    "message": "导出范围"
+  },
+  "export_button": {
+    "message": "导出书签"
+  },
+  "all_bookmarks": {
+    "message": "全部书签"
+  },
+  "exported_count_other": {
+    "message": "已导出 $1 个书签"
+  },
+  "import_title": {
+    "message": "导入"
+  },
+  "import_note": {
+    "message": "内容会放进一个新文件夹，不会改动现有书签。"
+  },
+  "import_file": {
+    "message": "书签文件（.html）"
+  },
+  "import_folder_name": {
+    "message": "新文件夹名称"
+  },
+  "import_parent": {
+    "message": "放在"
+  },
+  "import_skip_existing": {
+    "message": "跳过已有的网址"
+  },
+  "import_progress": {
+    "message": "导入进度"
+  },
+  "import_undo": {
+    "message": "撤销这次导入"
+  },
+  "plan_bookmarks_other": {
+    "message": "将导入 $1 个书签"
+  },
+  "plan_folders_other": {
+    "message": "、$1 个文件夹"
+  },
+  "plan_skipping": {
+    "message": "，跳过 $1"
+  },
+  "plan_skip_existing_other": {
+    "message": "$1 个已有的网址"
+  },
+  "plan_skip_scripts_other": {
+    "message": "$1 个小书签"
+  },
+  "plan_skip_invalid_other": {
+    "message": "$1 个无效网址"
+  },
+  "list_separator": {
+    "message": "、"
+  },
+  "sentence_end": {
+    "message": "。"
+  },
+  "import_scripts_option_other": {
+    "message": "也导入 $1 个小书签（点击时会运行代码，只导入你信任的文件）"
+  },
+  "import_button_other": {
+    "message": "导入 $1 个书签"
+  },
+  "import_no_bookmarks": {
+    "message": "这个文件里没有找到书签。请选择浏览器导出的书签 HTML 文件。"
+  },
+  "import_default_folder": {
+    "message": "导入的书签 $1"
+  },
+  "imported_other": {
+    "message": "已把 $1 个书签导入到“$2”"
+  },
+  "imported_failed": {
+    "message": "，$1 个失败"
+  },
+  "import_undone": {
+    "message": "已撤销这次导入。"
+  },
+  "language_auto": {
+    "message": "自动"
+  },
+  "language_label": {
+    "message": "语言"
+  }
+}

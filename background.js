@@ -2,6 +2,7 @@
 // the popup, which closes as soon as it loses focus, so all progress lives in
 // chrome.storage and the popup follows along through storage.onChanged.
 import { indexTree } from './lib/bookmarks-model.js';
+import { initI18n, LANGUAGE_KEY, t } from './lib/i18n.js';
 import { applyBatch, checkUrl, createJob, Kind, pickBatch } from './lib/link-check.js';
 import { buildSuggestions, resolveEntered } from './lib/omnibox.js';
 
@@ -160,6 +161,15 @@ chrome.omnibox.onInputEntered.addListener(async (text, disposition) => {
   }
 });
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.omnibox.setDefaultSuggestion({ description: '搜索书签：<match>%s</match>' });
+/* Language: the only text shown from here, besides the name the manifest gives Chrome. */
+
+async function applyLanguage() {
+  await initI18n();
+  chrome.omnibox.setDefaultSuggestion({ description: t('omnibox_default') });
+  await chrome.action.setTitle({ title: t('extension_name') });
+}
+
+applyLanguage();
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes[LANGUAGE_KEY]) applyLanguage();
 });

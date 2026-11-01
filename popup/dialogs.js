@@ -1,4 +1,5 @@
 import { folderOptions } from '../lib/bookmarks-model.js';
+import { plural, t } from '../lib/i18n.js';
 import { isMacPlatform, opensShortcutHelp, shortcutGroups } from '../lib/shortcuts.js';
 import { normalizeInputUrl } from '../lib/urls.js';
 import { h } from './dom.js';
@@ -40,7 +41,7 @@ export function initShortcutHelp() {
   const platform = navigator.userAgentData?.platform ?? navigator.platform;
 
   document.getElementById('help-list').replaceChildren(
-    ...shortcutGroups(isMacPlatform(platform)).map((group) =>
+    ...shortcutGroups(isMacPlatform(platform), t).map((group) =>
       h(
         'section',
         {},
@@ -122,7 +123,7 @@ export function moveDialog({ roots, nodes, parentId, onMove }) {
   const dialog = document.getElementById('move-dialog');
   const folder = document.getElementById('move-folder');
   const name = document.getElementById('move-new-folder');
-  document.getElementById('move-title').textContent = `移动 ${nodes.length} 项`;
+  document.getElementById('move-title').textContent = plural('move_title', nodes.length);
   document.getElementById('move-error').textContent = '';
   name.value = '';
 
@@ -172,10 +173,10 @@ function openEditDialog({ title, name, url, showUrl, roots, excludeId, parentId,
     const values = { title: form.name().value.trim(), parentId: form.folder().value };
     if (showUrl) {
       values.url = normalizeInputUrl(form.url().value);
-      if (!values.url) throw new Error('请输入有效的网址');
+      if (!values.url) throw new Error(t('invalid_url'));
       values.title ||= values.url;
     } else if (!values.title) {
-      throw new Error('请输入文件夹名称');
+      throw new Error(t('folder_name_required'));
     }
     await onSave(values);
     form.dialog().close();
@@ -187,7 +188,7 @@ function openEditDialog({ title, name, url, showUrl, roots, excludeId, parentId,
 
 export function createBookmarkDialog({ roots, parentId, name = '', url = '' }) {
   openEditDialog({
-    title: '添加书签',
+    title: t('add_bookmark'),
     name,
     url,
     showUrl: true,
@@ -201,7 +202,7 @@ export function createBookmarkDialog({ roots, parentId, name = '', url = '' }) {
 
 export function createFolderDialog({ roots, parentId }) {
   openEditDialog({
-    title: '新建文件夹',
+    title: t('new_folder'),
     name: '',
     showUrl: false,
     roots,
@@ -215,7 +216,7 @@ export function createFolderDialog({ roots, parentId }) {
 export function editNodeDialog({ roots, node }) {
   const isBookmark = node.url !== undefined;
   openEditDialog({
-    title: isBookmark ? '编辑书签' : '编辑文件夹',
+    title: isBookmark ? t('edit_bookmark') : t('edit_folder'),
     name: node.title,
     url: node.url,
     showUrl: isBookmark,

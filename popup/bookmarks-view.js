@@ -1,5 +1,6 @@
 import { canHoldChildren, canModify, folderTrail, ROOT_ID, searchBookmarks, topmostInOrder } from '../lib/bookmarks-model.js';
 import { dropZone, resolveDrop, resolveStep } from '../lib/drag.js';
+import { plural, t } from '../lib/i18n.js';
 import { parseHttpUrl } from '../lib/urls.js';
 import { moveNodes, undoMoves } from './actions.js';
 import { editNodeDialog, moveDialog } from './dialogs.js';
@@ -42,12 +43,12 @@ export function createBookmarksView(app) {
     selectionBar.hidden = !selecting;
     if (!selecting) return;
     const nothing = selected.size === 0;
-    document.getElementById('selection-count').textContent = `已选 ${selected.size} 项`;
+    document.getElementById('selection-count').textContent = t('selected_count', selected.size);
     document.getElementById('selection-move').disabled = nothing;
     document.getElementById('selection-delete').disabled = nothing;
     const visible = visibleSelectableIds();
     const all = document.getElementById('selection-all');
-    all.textContent = visible.length && visible.every((id) => selected.has(id)) ? '取消全选' : '全选';
+    all.textContent = visible.length && visible.every((id) => selected.has(id)) ? t('deselect_all') : t('select_all');
     all.disabled = visible.length === 0;
   }
 
@@ -95,7 +96,7 @@ export function createBookmarksView(app) {
       type: 'checkbox',
       class: 'tile-check',
       checked: selected.has(node.id),
-      'aria-label': `选择“${node.title || node.url}”`,
+      'aria-label': t('select_item', node.title || node.url),
       onclick: (event) => setSelected(node.id, event.target.checked, event.shiftKey),
     });
   }
@@ -104,10 +105,10 @@ export function createBookmarksView(app) {
     const nodes = selectedNodes();
     const inFolders = nodes.reduce((sum, node) => sum + (node.url === undefined ? (app.index.nodes.get(node.id)?.count ?? 0) : 0), 0);
     const message = inFolders
-      ? `将删除 ${nodes.length} 项，文件夹里的 ${inFolders} 个书签也会一起删除。`
-      : `将删除 ${nodes.length} 项。`;
+      ? plural('delete_items_and_contents', inFolders, nodes.length)
+      : plural('delete_items', nodes.length);
     app.run(async () => {
-      const removed = await app.removeNodes(nodes.map((node) => node.id), { title: '删除所选内容？', message });
+      const removed = await app.removeNodes(nodes.map((node) => node.id), { title: t('delete_selection_title'), message });
       if (removed) setSelecting(false);
     });
   }
@@ -162,8 +163,8 @@ export function createBookmarksView(app) {
     return h(
       'div',
       { class: 'tile-actions' },
-      actionButton(`编辑“${label}”`, 'edit', () => editNodeDialog({ roots: app.roots, node })),
-      actionButton(`删除“${label}”`, 'trash', () => app.removeNode(node)),
+      actionButton(t('edit_item', label), 'edit', () => editNodeDialog({ roots: app.roots, node })),
+      actionButton(t('delete_item', label), 'trash', () => app.removeNode(node)),
     );
   }
 
@@ -225,7 +226,7 @@ export function createBookmarksView(app) {
           type: 'button',
           class: 'tile-main',
           title: node.title,
-          'aria-label': `文件夹 ${node.title}，${count} 个书签`,
+          'aria-label': plural('folder_label', count, node.title),
           onclick: () => showFolder(node.id),
         },
         h('span', { class: 'tile-icon' }, icon('folder', 'folder-icon'), count ? h('span', { class: 'tile-count' }, String(count)) : null),
@@ -248,7 +249,7 @@ export function createBookmarksView(app) {
             const node = app.index.nodes.get(child.id) ?? child;
             return node.url === undefined ? folderTile(node) : bookmarkTile(node);
           })
-        : h('li', { class: 'grid-empty' }, '这个文件夹是空的'),
+        : h('li', { class: 'grid-empty' }, t('folder_empty')),
     );
   }
 
@@ -271,11 +272,11 @@ export function createBookmarksView(app) {
               type: 'button',
               class: 'crumb',
               'data-id': node.id,
-              title: node.id === ROOT_ID ? '全部' : node.title,
+              title: node.id === ROOT_ID ? t('crumb_all') : node.title,
               'aria-current': position === trail.length - 1 ? 'page' : null,
               onclick: () => showFolder(node.id),
             },
-            node.id === ROOT_ID ? '全部' : node.title,
+            node.id === ROOT_ID ? t('crumb_all') : node.title,
           ),
         ),
       ),
@@ -287,12 +288,12 @@ export function createBookmarksView(app) {
   function renderResults(query) {
     const { items, total } = searchBookmarks(app.index.bookmarks, query);
     if (!total) {
-      body.replaceChildren(h('p', { class: 'empty' }, `没有找到“${query.trim()}”相关的书签`));
+      body.replaceChildren(h('p', { class: 'empty' }, t('no_results', query.trim())));
       return;
     }
     body.replaceChildren(h('ul', { class: 'grid' }, items.map((node) => bookmarkTile(node, { showPath: true }))));
     if (total > items.length) {
-      body.append(h('p', { class: 'hint' }, `只显示前 ${items.length} 条，共 ${total} 条。试试再加个关键词。`));
+      body.append(h('p', { class: 'hint' }, t('results_capped', items.length, total)));
     }
   }
 
@@ -343,20 +344,20 @@ export function createBookmarksView(app) {
     const { origins, moved, failed } = await moveNodes(nodes.map((node) => node.id), destination);
     if (endSelection) setSelecting(false);
     if (failed) {
-      app.notify(`已移动 ${moved} 项，${failed} 项移动失败`);
+      app.notify(t('move_partial', moved, failed));
       return;
     }
     // Reordering within a folder shows for itself. Anything else is easy to lose track of.
     const leftFolder = nodes.some((node) => node.parentId !== destination.parentId);
     if (nodes.length === 1 && !leftFolder) return;
-    app.notify(nodes.length > 1 ? `已把 ${nodes.length} 项移到“${label}”` : `已移到“${label}”`, {
-      actionLabel: '撤销',
+    app.notify(nodes.length > 1 ? t('moved_items', nodes.length, label) : t('moved_to_folder', label), {
+      actionLabel: t('undo'),
       hideAfterMs: 10_000,
       onAction: async () => {
         await undoMoves(origins);
         // Chrome refuses to remove a folder with anything in it, so what you've added since is safe.
         if (createdFolderId) await chrome.bookmarks.remove(createdFolderId).catch(() => {});
-        app.notify('已撤销移动');
+        app.notify(t('move_undone'));
       },
     });
   }
@@ -442,7 +443,7 @@ export function createBookmarksView(app) {
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', node.url ?? node.title);
     if (nodes.length > 1) {
-      drag.badge = h('div', { class: 'drag-count' }, `${nodes.length} 项`);
+      drag.badge = h('div', { class: 'drag-count' }, t('drag_count', nodes.length));
       document.body.append(drag.badge);
       event.dataTransfer.setDragImage(drag.badge, 12, 12);
     }

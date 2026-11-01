@@ -1,0 +1,563 @@
+{
+  "locale_code": {
+    "message": "en"
+  },
+  "extension_name": {
+    "message": "Bookmark Butler"
+  },
+  "omnibox_default": {
+    "message": "Search bookmarks: <match>%s</match>"
+  },
+  "nav_views": {
+    "message": "Views"
+  },
+  "tab_bookmarks": {
+    "message": "Bookmarks"
+  },
+  "tab_cleanup": {
+    "message": "Clean up"
+  },
+  "shortcuts": {
+    "message": "Keyboard shortcuts"
+  },
+  "shortcuts_hint": {
+    "message": "Keyboard shortcuts (?)"
+  },
+  "import_export": {
+    "message": "Import and export"
+  },
+  "search_placeholder": {
+    "message": "Search titles, URLs or folders"
+  },
+  "search_label": {
+    "message": "Search bookmarks"
+  },
+  "multi_select": {
+    "message": "Select multiple"
+  },
+  "add_current_page": {
+    "message": "Bookmark this page"
+  },
+  "new_folder": {
+    "message": "New folder"
+  },
+  "folder_path": {
+    "message": "Folder path"
+  },
+  "move": {
+    "message": "Move"
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "done": {
+    "message": "Done"
+  },
+  "cleanup_types": {
+    "message": "Cleanup type"
+  },
+  "segment_duplicates": {
+    "message": "Duplicates"
+  },
+  "segment_dead": {
+    "message": "Dead links"
+  },
+  "segment_empty": {
+    "message": "Empty folders"
+  },
+  "delete_selected": {
+    "message": "Delete selected"
+  },
+  "close_notice": {
+    "message": "Dismiss"
+  },
+  "field_name": {
+    "message": "Name"
+  },
+  "field_url": {
+    "message": "URL"
+  },
+  "field_folder": {
+    "message": "Folder"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "got_it": {
+    "message": "Got it"
+  },
+  "move_to": {
+    "message": "Move to"
+  },
+  "move_new_folder": {
+    "message": "Create a new folder here (optional)"
+  },
+  "shortcuts_group_search": {
+    "message": "Search"
+  },
+  "shortcuts_group_browse": {
+    "message": "Browse and organize"
+  },
+  "shortcuts_group_select": {
+    "message": "Multi-select"
+  },
+  "shortcuts_group_other": {
+    "message": "Other"
+  },
+  "key_enter": {
+    "message": "Enter"
+  },
+  "key_arrows": {
+    "message": "Arrows"
+  },
+  "key_click": {
+    "message": "Click"
+  },
+  "key_space": {
+    "message": "Space"
+  },
+  "key_keywords": {
+    "message": "keywords"
+  },
+  "shortcut_open_first": {
+    "message": "Open the first result"
+  },
+  "shortcut_enter_list": {
+    "message": "Move from search to the list"
+  },
+  "shortcut_move_focus": {
+    "message": "Move between items"
+  },
+  "shortcut_open": {
+    "message": "Open a bookmark or folder"
+  },
+  "shortcut_go_up": {
+    "message": "Go up a level"
+  },
+  "shortcut_background": {
+    "message": "Open in the background"
+  },
+  "shortcut_reorder": {
+    "message": "Change an item's position"
+  },
+  "shortcut_toggle": {
+    "message": "Select or deselect"
+  },
+  "shortcut_range": {
+    "message": "Select a range"
+  },
+  "shortcut_exit_select": {
+    "message": "Leave multi-select"
+  },
+  "shortcut_address_bar": {
+    "message": "Search from the address bar"
+  },
+  "shortcut_help": {
+    "message": "Open this list"
+  },
+  "selected_count": {
+    "message": "$1 selected"
+  },
+  "select_all": {
+    "message": "Select all"
+  },
+  "deselect_all": {
+    "message": "Deselect all"
+  },
+  "select_item": {
+    "message": "Select \"$1\""
+  },
+  "delete_selection_title": {
+    "message": "Delete the selected items?"
+  },
+  "delete_items_one": {
+    "message": "Delete 1 item."
+  },
+  "delete_items_other": {
+    "message": "Delete $1 items."
+  },
+  "delete_items_and_contents_one": {
+    "message": "Delete $2 selected, including 1 bookmark inside folders."
+  },
+  "delete_items_and_contents_other": {
+    "message": "Delete $2 selected, including $1 bookmarks inside folders."
+  },
+  "edit_item": {
+    "message": "Edit \"$1\""
+  },
+  "delete_item": {
+    "message": "Delete \"$1\""
+  },
+  "folder_label_one": {
+    "message": "Folder $2, 1 bookmark"
+  },
+  "folder_label_other": {
+    "message": "Folder $2, $1 bookmarks"
+  },
+  "folder_empty": {
+    "message": "This folder is empty"
+  },
+  "crumb_all": {
+    "message": "All"
+  },
+  "no_results": {
+    "message": "No bookmarks match \"$1\""
+  },
+  "results_capped": {
+    "message": "Showing the first $1 of $2. Try adding another keyword."
+  },
+  "move_partial": {
+    "message": "Moved $1, but $2 could not be moved"
+  },
+  "moved_items": {
+    "message": "Moved $1 items to \"$2\""
+  },
+  "moved_to_folder": {
+    "message": "Moved to \"$1\""
+  },
+  "undo": {
+    "message": "Undo"
+  },
+  "move_undone": {
+    "message": "Move undone"
+  },
+  "drag_count": {
+    "message": "$1 items"
+  },
+  "bookmarklet_blocked": {
+    "message": "Bookmarklets can only run from Chrome's bookmarks bar"
+  },
+  "dead_title": {
+    "message": "Dead"
+  },
+  "dead_note": {
+    "message": "The server says the page no longer exists."
+  },
+  "unreachable_title": {
+    "message": "Can't connect"
+  },
+  "unreachable_note": {
+    "message": "The site may be gone, or just not reachable from this network or proxy. Worth checking first."
+  },
+  "uncertain_title": {
+    "message": "Not sure"
+  },
+  "uncertain_note": {
+    "message": "The site refused the check or timed out. The page may be fine, so try opening it."
+  },
+  "reason_timeout": {
+    "message": "Timed out"
+  },
+  "no_duplicates": {
+    "message": "No duplicate bookmarks found"
+  },
+  "duplicates_identical": {
+    "message": "Identical"
+  },
+  "duplicates_similar": {
+    "message": "Similar URLs"
+  },
+  "duplicates_copies": {
+    "message": "$1 copies"
+  },
+  "duplicates_oldest": {
+    "message": "Oldest"
+  },
+  "duplicates_summary_one": {
+    "message": "Found 1 group. Identical copies are ticked, keeping the oldest in each group. Similar URLs are never ticked for you."
+  },
+  "duplicates_summary_other": {
+    "message": "Found $1 groups. Identical copies are ticked, keeping the oldest in each group. Similar URLs are never ticked for you."
+  },
+  "no_empty_folders": {
+    "message": "No empty folders found"
+  },
+  "empty_summary_one": {
+    "message": "Found 1 folder with no bookmarks in it. If you want to keep it, untick it."
+  },
+  "empty_summary_other": {
+    "message": "Found $1 folders with no bookmarks in them. Untick any you want to keep."
+  },
+  "empty_subfolders_one": {
+    "message": "$2 · Contains 1 empty subfolder"
+  },
+  "empty_subfolders_other": {
+    "message": "$2 · Contains $1 empty subfolders"
+  },
+  "no_response": {
+    "message": "The background service didn't respond"
+  },
+  "scan_checked_one": {
+    "message": "Checked 1 URL on $2"
+  },
+  "scan_checked_other": {
+    "message": "Checked $1 URLs on $2"
+  },
+  "scan_skipped_one": {
+    "message": ", skipped 1 private or non-web address"
+  },
+  "scan_skipped_other": {
+    "message": ", skipped $1 private or non-web addresses"
+  },
+  "scan_found_one": {
+    "message": ", found 1 problem."
+  },
+  "scan_found_other": {
+    "message": ", found $1 problems."
+  },
+  "scan_clean": {
+    "message": ", no problems found."
+  },
+  "scan_intro": {
+    "message": "Visits each bookmarked URL to find the ones that don't open. It runs in the background, keeps going if you close this popup, and doesn't use your logins."
+  },
+  "scan_start": {
+    "message": "Start checking"
+  },
+  "scan_progress": {
+    "message": "Check progress"
+  },
+  "scan_stop": {
+    "message": "Stop"
+  },
+  "scan_offline": {
+    "message": "You're offline, so the check is paused."
+  },
+  "scan_stopped": {
+    "message": "The check was stopped."
+  },
+  "scan_stopped_progress": {
+    "message": "$3 Finished $1 of $2."
+  },
+  "scan_resume": {
+    "message": "Continue"
+  },
+  "scan_restart": {
+    "message": "Start over"
+  },
+  "scan_recheck": {
+    "message": "Check again"
+  },
+  "scan_running": {
+    "message": "Checking $1 of $2. You can close this popup."
+  },
+  "open_to_check": {
+    "message": "Open in the background to check"
+  },
+  "open_item_background": {
+    "message": "Open \"$1\" in the background"
+  },
+  "group_title": {
+    "message": "$1 ($2)"
+  },
+  "delete_folders_title": {
+    "message": "Delete the selected folders?"
+  },
+  "delete_empty_folders_one": {
+    "message": "Delete 1 empty folder."
+  },
+  "delete_empty_folders_other": {
+    "message": "Delete $1 empty folders."
+  },
+  "delete_bookmarks_title": {
+    "message": "Delete the selected bookmarks?"
+  },
+  "delete_bookmarks_one": {
+    "message": "Delete 1 bookmark."
+  },
+  "delete_bookmarks_other": {
+    "message": "Delete $1 bookmarks."
+  },
+  "delete_all_copies_one": {
+    "message": " Every copy in 1 group is ticked, so that bookmark won't be kept at all."
+  },
+  "delete_all_copies_other": {
+    "message": " Every copy in $1 groups is ticked, so those bookmarks won't be kept at all."
+  },
+  "move_title_one": {
+    "message": "Move 1 item"
+  },
+  "move_title_other": {
+    "message": "Move $1 items"
+  },
+  "invalid_url": {
+    "message": "Enter a valid URL"
+  },
+  "folder_name_required": {
+    "message": "Enter a folder name"
+  },
+  "add_bookmark": {
+    "message": "Add bookmark"
+  },
+  "edit_bookmark": {
+    "message": "Edit bookmark"
+  },
+  "edit_folder": {
+    "message": "Edit folder"
+  },
+  "action_failed": {
+    "message": "Something went wrong: $1"
+  },
+  "delete_folder_title": {
+    "message": "Delete the folder \"$1\"?"
+  },
+  "delete_folder_contents_one": {
+    "message": "The 1 bookmark inside will be deleted too."
+  },
+  "delete_folder_contents_other": {
+    "message": "The $1 bookmarks inside will be deleted too."
+  },
+  "delete_folder_empty": {
+    "message": "This folder is empty."
+  },
+  "undo_window": {
+    "message": " You can undo this for 10 minutes."
+  },
+  "deleted_count_one": {
+    "message": "Deleted 1 item"
+  },
+  "deleted_count_other": {
+    "message": "Deleted $1 items"
+  },
+  "restored_count_one": {
+    "message": "Restored 1 item"
+  },
+  "restored_count_other": {
+    "message": "Restored $1 items"
+  },
+  "nothing_to_restore": {
+    "message": "Nothing to restore"
+  },
+  "delete_partial": {
+    "message": "Deleted $1, but $2 could not be deleted"
+  },
+  "transfer_page_title": {
+    "message": "Import and export bookmarks - Bookmark Butler"
+  },
+  "transfer_heading": {
+    "message": "Import and export bookmarks"
+  },
+  "export_title": {
+    "message": "Export"
+  },
+  "export_note": {
+    "message": "Saves a standard bookmark HTML file. Keep it as a backup, or import it into Chrome, Edge, Firefox or Safari."
+  },
+  "export_scope": {
+    "message": "What to export"
+  },
+  "export_button": {
+    "message": "Export bookmarks"
+  },
+  "all_bookmarks": {
+    "message": "All bookmarks"
+  },
+  "exported_count_one": {
+    "message": "Exported 1 bookmark"
+  },
+  "exported_count_other": {
+    "message": "Exported $1 bookmarks"
+  },
+  "import_title": {
+    "message": "Import"
+  },
+  "import_note": {
+    "message": "Everything goes into a new folder, so your existing bookmarks aren't changed."
+  },
+  "import_file": {
+    "message": "Bookmark file (.html)"
+  },
+  "import_folder_name": {
+    "message": "New folder name"
+  },
+  "import_parent": {
+    "message": "Put it in"
+  },
+  "import_skip_existing": {
+    "message": "Skip URLs you already have"
+  },
+  "import_progress": {
+    "message": "Import progress"
+  },
+  "import_undo": {
+    "message": "Undo this import"
+  },
+  "plan_bookmarks_one": {
+    "message": "Will import 1 bookmark"
+  },
+  "plan_bookmarks_other": {
+    "message": "Will import $1 bookmarks"
+  },
+  "plan_folders_one": {
+    "message": " and 1 folder"
+  },
+  "plan_folders_other": {
+    "message": " and $1 folders"
+  },
+  "plan_skipping": {
+    "message": ", skipping $1"
+  },
+  "plan_skip_existing_one": {
+    "message": "1 URL you already have"
+  },
+  "plan_skip_existing_other": {
+    "message": "$1 URLs you already have"
+  },
+  "plan_skip_scripts_one": {
+    "message": "1 bookmarklet"
+  },
+  "plan_skip_scripts_other": {
+    "message": "$1 bookmarklets"
+  },
+  "plan_skip_invalid_one": {
+    "message": "1 invalid URL"
+  },
+  "plan_skip_invalid_other": {
+    "message": "$1 invalid URLs"
+  },
+  "list_separator": {
+    "message": ", "
+  },
+  "sentence_end": {
+    "message": "."
+  },
+  "import_scripts_option_one": {
+    "message": "Also import 1 bookmarklet (it runs code when clicked, so only do this for files you trust)"
+  },
+  "import_scripts_option_other": {
+    "message": "Also import $1 bookmarklets (they run code when clicked, so only do this for files you trust)"
+  },
+  "import_button_one": {
+    "message": "Import 1 bookmark"
+  },
+  "import_button_other": {
+    "message": "Import $1 bookmarks"
+  },
+  "import_no_bookmarks": {
+    "message": "No bookmarks found in this file. Choose a bookmark HTML file exported from a browser."
+  },
+  "import_default_folder": {
+    "message": "Imported bookmarks $1"
+  },
+  "imported_one": {
+    "message": "Imported 1 bookmark into \"$2\""
+  },
+  "imported_other": {
+    "message": "Imported $1 bookmarks into \"$2\""
+  },
+  "imported_failed": {
+    "message": ", $1 failed"
+  },
+  "import_undone": {
+    "message": "This import was undone."
+  },
+  "language_auto": {
+    "message": "Auto"
+  },
+  "language_label": {
+    "message": "Language"
+  }
+}
