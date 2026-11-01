@@ -51,7 +51,7 @@ HOW TO USE
 3. Open the Clean up tab to review duplicates, dead links and empty folders
 4. Press ? in the popup to see the keyboard shortcuts
 
-Nothing is removed without your confirmation.
+Deleting a folder or several items asks first, and any deletion can be undone for 10 minutes.
 
 PRIVACY
 Bookmark Butler has no account, no analytics and no server of its own. Your bookmarks stay in Chrome, and your settings stay on your device.
@@ -89,7 +89,7 @@ Found a bug or have a suggestion? Open an issue at https://github.com/shixiaozho
 3. 打开“清理”页，查看重复书签、失效链接和空文件夹
 4. 在弹窗里按 ? 查看快捷键
 
-没有你的确认，不会删除任何内容。
+删除文件夹或多项内容前会先确认，所有删除都能在 10 分钟内撤销。
 
 隐私
 Bookmark Butler 没有账号、没有统计分析，也没有自己的服务器。你的书签保存在 Chrome 里，设置保存在你的设备上。

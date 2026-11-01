@@ -1,72 +1,130 @@
-# 书签管家
+<div align="center">
+  <img src="icons/icon-128.png" alt="Bookmark Butler" width="96" />
+  <h1>Bookmark Butler</h1>
+  <p><em>A Chrome extension to search, organize and clean up your bookmarks from a popup</em></p>
+  <p>English · <a href="README_CN.md">中文</a></p>
+  <p>
+    <a href="https://github.com/shixiaozhong/bookmark-butler/releases/latest">Download</a> ·
+    <a href="#quick-start">Quick start</a> ·
+    <a href="#faq">FAQ</a>
+  </p>
+  <a href="https://github.com/shixiaozhong/bookmark-butler/actions/workflows/ci.yml"><img src="https://github.com/shixiaozhong/bookmark-butler/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/shixiaozhong/bookmark-butler/releases/latest"><img src="https://img.shields.io/github/v/release/shixiaozhong/bookmark-butler?style=flat-square" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/Chrome-123%2B-4285F4?style=flat-square" alt="Chrome 123+">
+  <img src="https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square" alt="No dependencies">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT"></a>
+</div>
 
-一个 Chrome 弹窗插件，用来搜索、整理书签，并清理重复书签和失效链接。支持中文和英文，零依赖，无需构建。
+<br />
 
-## 安装
+<p align="center">
+  <img src="docs/images/grid-en.png" alt="Bookmarks shown as a grid" width="270" />
+  <img src="docs/images/select-en.png" alt="Selecting several bookmarks" width="270" />
+  <img src="docs/images/cleanup-en.png" alt="Reviewing duplicate bookmarks" width="270" />
+</p>
 
-1. 到 [Releases](https://github.com/shixiaozhong/bookmark-butler/releases/latest) 下载最新的 `bookmark-butler-*.zip` 并解压。请保留解压后的文件夹，Chrome 会从这里加载插件。
-2. 打开 `chrome://extensions`，开启右上角的“开发者模式”。
-3. 点“加载已解压的扩展程序”，选择解压后的文件夹。
-4. 把插件固定到工具栏，点图标打开。
+## Why
 
-更新时，下载新版本并替换文件夹内容，再到扩展页点插件卡片上的刷新按钮。
+Bookmarks pile up over the years: the same page saved in three folders, links that stopped working long ago, folders left empty by the last tidy-up. Finding these by hand means opening one folder after another and clicking links to see what still loads.
 
-## 功能
+Bookmark Butler finds them for you and leaves the decision to you. It works directly on Chrome's own bookmarks, so there's nothing to import and nothing to keep in sync, and it has no account, no analytics and no server.
 
-- **搜索：** 按标题、网址、文件夹查找，多个关键词用空格分隔。回车打开第一条，方向键在结果间移动。
-- **语言切换：** 用弹窗右上角的下拉框选择自动（跟随 Chrome）、English 或中文。扩展管理页和地址栏里显示的插件名称和描述固定为英文（Bookmark Butler）。
-- **快捷键说明：** 点弹窗右上角的问号，或按 `?`，查看所有快捷键。
-- **地址栏搜索：** 在地址栏输入 `b` 和空格，再输入关键词，不用打开弹窗也能搜书签。
-- **多选和批量操作：** 点搜索框旁的多选按钮，勾选书签或文件夹后批量移动、删除或拖动，`Shift` 可以连选。切换文件夹或搜索时选择不会丢失。
-- **网格浏览：** 书签以图标网格显示，点文件夹进入，用顶部路径返回。键盘可用方向键移动，`Backspace` 返回上一层。
-- **整理：** 新建、编辑、移动、删除书签和文件夹，也可以收藏当前页。
-- **拖拽排序：** 拖动图标调整顺序，拖到文件夹中间可以放进去，停留片刻会进入该文件夹。拖到顶部路径可以移到上层。键盘操作用 `Alt + 方向键` 在当前文件夹内移动。
-- **清理重复：** 完全相同的副本默认勾选，每组保留最早收藏的一条；只是相似的网址（http/https、www、跟踪参数等差异）不会默认勾选。
-- **清理空文件夹：** 找出里面没有任何书签的文件夹，默认勾选，由你确认后删除。
-- **检测失效链接：** 在后台运行，关闭弹窗不会中断，进度显示在图标角标上。结果分为“已失效”“无法连接”“不确定”三类，不会默认勾选，由你决定删除哪些。
-- **导入导出：** 点弹窗右上角的箭头图标打开页面。使用浏览器通用的书签 HTML 格式。导入的内容放进一个新文件夹，默认跳过已有的网址和小书签，导入后可以撤销。书签的添加时间会变成导入时的时间，因为 Chrome 不允许插件设置这个时间。
-- **撤销：** 删除后 10 分钟内可以撤销最近一次删除。恢复的书签会回到原位置，但“添加时间”会变成恢复时间。
+## Quick start
 
-## 失效检测的局限
+1. Download `bookmark-butler-*.zip` from the [latest release](https://github.com/shixiaozhong/bookmark-butler/releases/latest) and unzip it. Keep the folder, because Chrome loads the extension from it.
+2. Open `chrome://extensions` and turn on **Developer mode**.
+3. Click **Load unpacked** and choose the unzipped folder.
+4. Pin the extension to the toolbar and click its icon.
 
-- 内网地址（`localhost`、私有 IP、`.local` 等）和非网页地址（`chrome://` 等）会跳过。
-- 请求不带登录状态，需要登录的页面可能显示为“不确定”。
-- “无法连接”也可能只是当前网络或代理访问不了，删除前建议先确认。
-- 返回 200 的“软 404”页面（比如跳转到首页）检测不出来。
+To update, download the new version, replace the folder's contents, then click the reload button on the extension's card.
 
-## 开发
+> This manages your real bookmarks, and with Chrome Sync on, changes reach your other devices too. Before a big cleanup, you can export a backup from the import and export page.
 
-```sh
-npm test            # 运行单元测试（只用 Node，无需安装依赖）
-npm run icons       # 重新生成图标
-npm run package     # 跑测试，检查版本号，打包成 dist/bookmark-butler-<版本号>.zip
-npm run bump minor  # 升版本号（patch、minor、major 或具体版本），同时改 manifest.json 和 package.json
+## Features
+
+- **Grid view**: browse bookmarks as icons, open folders in place, and go back up with the path at the top
+- **Search**: by title, URL or folder, with several keywords at once
+- **Address bar search**: type `b`, a space and a keyword, without opening the popup
+- **Drag and drop**: reorder, drop into a folder, hover to open one mid-drag, or drop on the path to move up a level
+- **Multi-select**: move, delete or drag many items together, picked across folders and search results
+- **Duplicate cleanup**: identical copies are ticked for you, keeping the oldest in each group; URLs that only look similar are never ticked for you
+- **Dead link check**: runs in the background and keeps going if you close the popup; results are sorted into dead, can't connect and not sure, and nothing is ticked for you
+- **Empty folder cleanup**: finds folders with no bookmarks anywhere inside
+- **Undo**: bring back the latest deletion for 10 minutes, or undo a move right after making it
+- **Import and export**: the standard bookmark file used by Chrome, Edge, Firefox and Safari; imports go into a new folder and skip URLs you already have
+- **English and Chinese**: follows Chrome or your choice in the popup, with light and dark themes that follow your system
+
+## Usage
+
+Click the extension icon, or press `?` in the popup to see this list.
+
+| Action | macOS | Windows / Linux |
+|---|---|---|
+| Open the first search result | `Enter` | `Enter` |
+| Move from search to the list | `↓` | `↓` |
+| Move between items | Arrow keys | Arrow keys |
+| Open a bookmark or folder | `Enter` | `Enter` |
+| Go up a level | `Delete` | `Backspace` |
+| Open a bookmark in the background | `⌘` + click | `Ctrl` + click |
+| Change an item's position | `⌥` + arrow keys | `Alt` + arrow keys |
+| Select or deselect, in multi-select | `Space` | `Space` |
+| Select a range, in multi-select | `Shift` + click | `Shift` + click |
+| Close a dialog, leave multi-select or clear the search | `Esc` | `Esc` |
+
+In the address bar, type `b`, then a space, then your keywords.
+
+## Design principles
+
+- **Your bookmarks stay in Chrome**: the extension keeps no copy, so what you see here and in Chrome is always the same
+- **You make the call**: only exact copies are ticked in advance; anything that could be wrong waits for you
+- **Mistakes can be undone**: deletions and moves can be reversed, and deleting a folder or several items asks first
+- **Nothing is sent to the developer**: no accounts, no analytics and no server; the dead link check only runs when you start it
+- **No dependencies, no build**: plain HTML, CSS and JavaScript that Chrome loads as it is
+
+## FAQ
+
+- **Why does it ask for access to all websites?** Bookmarks can point anywhere, so checking for dead links has to be able to request any address. Requests are only made when you start a check, they carry no cookies or logins, and private network addresses are skipped. The same access lets it fill in the current page when you save it.
+- **Does "can't connect" mean a link is dead?** Not necessarily. The site may be gone, or just not reachable from your network or proxy. Use the button beside the result to open it and check before deleting.
+- **What can't the dead link check catch?** Pages that respond normally while showing "not found", such as a redirect to the home page. Pages behind a login may show up as "not sure".
+- **Why do restored or imported bookmarks show a new date added?** Chrome doesn't let extensions set that date. It also affects which copy counts as the oldest when finding duplicates.
+- **Why not install it from the Chrome Web Store?** It isn't listed yet. Because it's loaded in developer mode, it doesn't update by itself, and Chrome may show a reminder about developer mode extensions.
+- **Why is the name in `chrome://extensions` always English?** Chrome reads it from the manifest, so it's kept the same everywhere. The language setting covers the popup and the import and export page.
+- **Does it work in Edge or Brave?** They are built on the same engine, so it may well work, but it has only been tested in Chrome.
+
+## Development
+
+You need [Node](https://nodejs.org) 22.2+ to run the scripts; there's nothing to install. To try your changes, load this folder with **Load unpacked** and click the reload button on the extension's card after editing.
+
+```bash
+npm test            # unit tests
+npm run package     # tests, version check, then dist/bookmark-butler-<version>.zip
+npm run bump minor  # patch, minor, major or an exact version, in both version files
+npm run icons       # redraw the icons
 ```
 
-需要 Node 22.2 或更高版本。开发时直接加载本目录即可，改完代码后在扩展页点刷新按钮生效。
+```
+background.js   # address bar search and the dead link check, which outlives the popup
+lib/            # logic that doesn't touch the page: URLs, duplicates, link checks, drag rules, file format
+popup/          # the popup
+transfer/       # the import and export page
+_locales/       # interface text in English and Chinese
+scripts/        # packaging, version bumps and icons
+tests/          # unit tests
+```
 
-### 发布新版本
+[CI](.github/workflows/ci.yml) runs the tests and builds the zip on Node 22 and 24 for every push.
 
-```sh
+To release a version, bump it, tag it and push. [A workflow](.github/workflows/release.yml) then publishes a GitHub Release with the zip, and stops if the tag doesn't match the version.
+
+```bash
 npm run bump minor
 git commit -am "Bump version to 0.3.0"
 git tag v0.3.0
 git push && git push --tags
 ```
 
-推送标签后，GitHub Actions 会跑测试、打包，并创建附带 zip 的 Release。标签和版本号不一致时会停止发布。
+Notes for a future Chrome Web Store listing are in [CHROMEWEBSTORE.md](CHROMEWEBSTORE.md).
 
-| 路径 | 内容 |
-|---|---|
-| `lib/` | 不依赖浏览器的逻辑：网址归一化、重复检测、链接判定 |
-| `background.js` | 后台运行的失效链接检测 |
-| `popup/` | 弹窗界面 |
-| `transfer/` | 导入导出页面 |
-| `_locales/` | 界面文字（`en`、`zh_CN`），默认跟随 Chrome 设置，其他语言显示英文 |
-| `tests/` | 单元测试 |
-| `scripts/` | 打包、升版本号和生成图标的脚本 |
-| `.github/` | CI 和自动发布 |
+## License
 
-## 许可证
-
-[MIT](LICENSE)
+[MIT](LICENSE). Feel free to use it and to contribute.
