@@ -1,0 +1,650 @@
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#ffffff, #1f2023);
+  --bg-raised: light-dark(#f4f5f7, #2a2b2f);
+  --bg-hover: light-dark(#eceef1, #33353a);
+  --border: light-dark(#dfe1e6, #3a3c42);
+  --text: light-dark(#1d2129, #e8e9ec);
+  --text-muted: light-dark(#646b78, #a0a4ad);
+  --accent: light-dark(#2563eb, #7aa7ff);
+  --accent-text: light-dark(#ffffff, #10203f);
+  --danger: light-dark(#c62828, #ff8a80);
+  --danger-text: light-dark(#ffffff, #3a0d0a);
+  --folder: light-dark(#8a93a3, #8d93a0);
+  accent-color: var(--accent);
+  scrollbar-color: light-dark(#b9bdc6, #5a5d65) transparent;
+  scrollbar-width: thin;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  height: 580px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.4 system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sprite {
+  position: absolute;
+}
+
+.icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Views */
+
+.tabs {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  padding: 8px 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 6px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tabs-end {
+  align-self: center;
+  margin-inline-start: auto;
+}
+
+.tab[aria-current='true'] {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.scroller {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Controls */
+
+.toolbar {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  padding: 10px;
+}
+
+input[type='search'],
+input[type='text'],
+select {
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.icon-button {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.icon-button.small {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-button.tiny {
+  width: 22px;
+  height: 22px;
+}
+
+.icon-button.tiny .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.button {
+  min-height: 30px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background: var(--bg-hover);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.button.primary,
+.button.primary:hover {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.button.danger,
+.button.danger:hover {
+  border-color: transparent;
+  background: var(--danger);
+  color: var(--danger-text);
+}
+
+.link-button {
+  flex: none;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* Bookmark grid */
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 10px 6px;
+  list-style: none;
+}
+
+.crumbs li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.crumb {
+  overflow: hidden;
+  min-width: 0;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crumb:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.crumb[aria-current='page'] {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.crumb-separator {
+  width: 12px;
+  height: 12px;
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 2px 10px 10px;
+  list-style: none;
+}
+
+/* Holds a dragged tile whose folder was left mid-drag. See springInto(). */
+.grid.drag-stash {
+  position: absolute;
+  overflow: hidden;
+  width: 0;
+  height: 0;
+  padding: 0;
+  visibility: hidden;
+}
+
+.grid-empty {
+  grid-column: 1 / -1;
+  padding-block: 40px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.tile {
+  position: relative;
+  border-radius: 8px;
+}
+
+.tile:hover,
+.tile:has(:focus-visible) {
+  background: var(--bg-hover);
+}
+
+.tile-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 10px 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tile-icon {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+}
+
+.favicon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  /* Images are draggable by themselves; this leaves the drag to the tile. */
+  pointer-events: none;
+}
+
+.tile .favicon {
+  width: 28px;
+  height: 28px;
+}
+
+.folder-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--folder);
+}
+
+.tile-count {
+  position: absolute;
+  inset-block-end: -2px;
+  inset-inline-end: -6px;
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  box-shadow: 0 0 0 1px var(--border);
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 16px;
+}
+
+.tile-title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.tile-path {
+  width: 100%;
+  font-size: 11px;
+}
+
+.tile-actions {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-end: 2px;
+  display: none;
+  /* Stacked down the tile's edge so the buttons don't cover its icon. */
+  flex-direction: column;
+  border-radius: 6px;
+  background: var(--bg-raised);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.tile:hover .tile-actions,
+.tile:has(:focus-visible) .tile-actions {
+  display: flex;
+}
+
+.tile.dragging {
+  opacity: 0.45;
+}
+
+.tile.drop-inside,
+.crumb.drop-inside {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+#bookmarks-body.drop-end {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* The insertion line runs in the gap beside the tile. */
+.tile.drop-before::before,
+.tile.drop-after::before {
+  position: absolute;
+  inset-block: 4px;
+  width: 2px;
+  background: var(--accent);
+  content: '';
+  pointer-events: none;
+}
+
+.tile.drop-before::before {
+  inset-inline-start: -3px;
+}
+
+.tile.drop-after::before {
+  inset-inline-end: -3px;
+}
+
+.row-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.title,
+.meta {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta,
+.count {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.count {
+  flex: none;
+  padding-inline-end: 4px;
+}
+
+/* Text states */
+
+.empty,
+.hint {
+  margin: 0;
+  padding: 10px 12px;
+  color: var(--text-muted);
+}
+
+.empty {
+  padding-block: 40px;
+  text-align: center;
+}
+
+/* Cleanup */
+
+.segments {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  margin: 10px 10px 4px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.segment {
+  flex: 1;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.segment[aria-pressed='true'] {
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--border);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.group {
+  margin: 4px 10px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 4px 8px;
+  background: var(--bg-raised);
+  font-size: 12px;
+}
+
+.group-header h3 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: 600;
+}
+
+.group-header .spacer {
+  flex: 1;
+}
+
+.group-note {
+  margin: 0;
+  padding: 6px 8px 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.check-row:hover {
+  background: var(--bg-hover);
+}
+
+.check-row + .check-row {
+  border-top: 1px solid var(--border);
+}
+
+.check-row input {
+  flex: none;
+  margin: 0;
+}
+
+.tag {
+  flex: none;
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.scan-card {
+  display: grid;
+  gap: 8px;
+  margin: 6px 10px 10px;
+}
+
+.scan-card p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.scan-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.scan-progress {
+  width: 100%;
+}
+
+.footer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+}
+
+/* Notice bar */
+
+.notice {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+
+#notice-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Dialogs */
+
+dialog {
+  width: min(340px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: rgb(0 0 0 / 0.35);
+}
+
+dialog h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+dialog p {
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.field > span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.form-error {
+  min-height: 18px;
+  margin: 0 0 6px;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

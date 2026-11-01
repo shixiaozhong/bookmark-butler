@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>导入和导出书签 - 书签管家</title>
+    <link rel="stylesheet" href="../popup/popup.css" />
+    <link rel="stylesheet" href="transfer.css" />
+    <script type="module" src="transfer.js"></script>
+  </head>
+  <body>
+    <main class="page">
+      <h1>导入和导出书签</h1>
+
+      <section class="card" aria-labelledby="export-title">
+        <h2 id="export-title">导出</h2>
+        <p class="card-note">保存为通用的书签 HTML 文件，可以当备份，也能导入 Chrome、Edge、Firefox 或 Safari。</p>
+        <label class="field">
+          <span>导出范围</span>
+          <select id="export-scope"></select>
+        </label>
+        <div class="card-actions">
+          <button type="button" id="export-button" class="button primary">导出书签</button>
+          <p id="export-status" class="status" role="status"></p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="import-title">
+        <h2 id="import-title">导入</h2>
+        <p class="card-note">内容会放进一个新文件夹，不会改动现有书签。</p>
+        <label class="field">
+          <span>书签文件（.html）</span>
+          <input id="import-file" type="file" accept=".html,.htm,text/html" />
+        </label>
+
+        <div id="import-options" hidden>
+          <p id="import-summary" class="summary" role="status"></p>
+          <label class="field">
+            <span>新文件夹名称</span>
+            <input id="import-name" type="text" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>放在</span>
+            <select id="import-parent"></select>
+          </label>
+          <label class="check-option">
+            <input id="import-skip-existing" type="checkbox" checked />
+            <span>跳过已有的网址</span>
+          </label>
+          <label class="check-option" id="import-scripts-option" hidden>
+            <input id="import-scripts" type="checkbox" />
+            <span id="import-scripts-label"></span>
+          </label>
+          <div class="card-actions">
+            <button type="button" id="import-button" class="button primary"></button>
+          </div>
+        </div>
+
+        <progress id="import-progress" class="scan-progress" aria-label="导入进度" hidden></progress>
+        <div id="import-result" class="result" hidden>
+          <p id="import-result-text" role="status"></p>
+          <button type="button" id="import-undo" class="button">撤销这次导入</button>
+        </div>
+        <p id="import-error" class="form-error" role="alert"></p>
+      </section>
+    </main>
+  </body>
+</html>

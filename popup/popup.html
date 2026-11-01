@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <title>书签管家</title>
+    <link rel="stylesheet" href="popup.css" />
+    <script type="module" src="popup.js"></script>
+  </head>
+  <body>
+    <svg width="0" height="0" class="sprite" aria-hidden="true">
+      <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 3.5 4.5 4.5L6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+      <symbol id="i-folder" viewBox="0 0 16 16"><path d="M1.75 4.25c0-.7.55-1.25 1.25-1.25h3l1.5 1.75H13c.7 0 1.25.55 1.25 1.25v6c0 .7-.55 1.25-1.25 1.25H3c-.7 0-1.25-.55-1.25-1.25z" fill="currentColor" /></symbol>
+      <symbol id="i-edit" viewBox="0 0 16 16"><path d="m10.5 2.75 2.75 2.75L5.5 13.25l-3.25.5.5-3.25zM9 4.25 11.75 7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" /></symbol>
+      <symbol id="i-trash" viewBox="0 0 16 16"><path d="M2.75 4.25h10.5M6.25 4V2.75h3.5V4M4 4.25l.6 9h6.8l.6-9M6.75 7v3.75M9.25 7v3.75" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+      <symbol id="i-folder-plus" viewBox="0 0 16 16"><path d="M1.75 4.25c0-.7.55-1.25 1.25-1.25h3l1.5 1.75H13c.7 0 1.25.55 1.25 1.25v6c0 .7-.55 1.25-1.25 1.25H3c-.7 0-1.25-.55-1.25-1.25zM8 7.25v3.5M6.25 9h3.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+      <symbol id="i-star-plus" viewBox="0 0 16 16"><path d="m8 2 1.8 3.8 4.2.55-3.05 2.9.8 4.15L8 11.4l-3.75 2 .8-4.15L2 6.35l4.2-.55z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" /></symbol>
+      <symbol id="i-transfer" viewBox="0 0 16 16"><path d="M5 13V3M5 3 2.5 5.5M5 3l2.5 2.5M11 3v10M11 13l-2.5-2.5M11 13l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+      <symbol id="i-external" viewBox="0 0 16 16"><path d="M9.5 2.75h3.75V6.5M13 3l-6 6M7 3.5H3.25v9.25h9.25V9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+    </svg>
+
+    <nav class="tabs" aria-label="视图">
+      <button type="button" class="tab" data-view="bookmarks">书签</button>
+      <button type="button" class="tab" data-view="cleanup">清理</button>
+      <button type="button" id="open-transfer" class="icon-button small tabs-end" title="导入和导出" aria-label="导入和导出"><svg class="icon"><use href="#i-transfer" /></svg></button>
+    </nav>
+
+    <main>
+      <section id="bookmarks-panel" class="panel" aria-label="书签">
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="搜索标题、网址或文件夹" aria-label="搜索书签" autocomplete="off" spellcheck="false" />
+          <button type="button" id="add-page" class="icon-button" title="收藏当前页" aria-label="收藏当前页"><svg class="icon"><use href="#i-star-plus" /></svg></button>
+          <button type="button" id="add-folder" class="icon-button" title="新建文件夹" aria-label="新建文件夹"><svg class="icon"><use href="#i-folder-plus" /></svg></button>
+        </div>
+        <nav id="crumbs-nav" aria-label="文件夹路径"><ol id="crumbs" class="crumbs"></ol></nav>
+        <div id="bookmarks-body" class="scroller"></div>
+      </section>
+
+      <section id="cleanup-panel" class="panel" aria-label="清理" hidden>
+        <div class="segments" role="group" aria-label="清理类型">
+          <button type="button" class="segment" data-mode="duplicates">重复书签</button>
+          <button type="button" class="segment" data-mode="dead">失效链接</button>
+        </div>
+        <div id="cleanup-body" class="scroller"></div>
+        <div id="cleanup-footer" class="footer" hidden>
+          <span id="cleanup-count" role="status"></span>
+          <button type="button" id="cleanup-delete" class="button danger">删除所选</button>
+        </div>
+      </section>
+    </main>
+
+    <div id="notice" class="notice" role="status" hidden>
+      <span id="notice-text"></span>
+      <button type="button" id="notice-action" class="link-button" hidden></button>
+      <button type="button" id="notice-close" class="link-button" aria-label="关闭提示">×</button>
+    </div>
+
+    <dialog id="edit-dialog" aria-labelledby="edit-title" closedby="closerequest">
+      <form id="edit-form" novalidate>
+        <h2 id="edit-title"></h2>
+        <label class="field">
+          <span>名称</span>
+          <input id="edit-name" type="text" autocomplete="off" />
+        </label>
+        <label class="field" id="edit-url-field">
+          <span>网址</span>
+          <input id="edit-url" type="text" inputmode="url" autocomplete="off" spellcheck="false" />
+        </label>
+        <label class="field">
+          <span>所在文件夹</span>
+          <select id="edit-folder"></select>
+        </label>
+        <p id="edit-error" class="form-error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" id="edit-cancel" class="button">取消</button>
+          <button type="submit" class="button primary">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="confirm-dialog" aria-labelledby="confirm-title" closedby="closerequest">
+      <form method="dialog">
+        <h2 id="confirm-title"></h2>
+        <p id="confirm-message"></p>
+        <div class="dialog-actions">
+          <button value="cancel" class="button" autofocus>取消</button>
+          <button value="confirm" id="confirm-accept" class="button danger"></button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

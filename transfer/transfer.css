@@ -1,0 +1,102 @@
+/* Builds on popup.css for colors and controls; this page fills a whole tab instead. */
+body {
+  display: block;
+  width: auto;
+  height: auto;
+  min-height: 100vh;
+  overflow: auto;
+  background: var(--bg-raised);
+  font-size: 14px;
+}
+
+.page {
+  display: block;
+  max-width: 560px;
+  margin-inline: auto;
+  padding: 40px 16px 64px;
+}
+
+h1 {
+  margin: 0 0 20px;
+  font-size: 22px;
+}
+
+.card {
+  display: block;
+  margin-bottom: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.card h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.card-note {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.status {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.summary {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  overflow-wrap: anywhere;
+}
+
+.check-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.check-option input {
+  flex: none;
+  margin: 0;
+}
+
+.scan-progress {
+  display: block;
+  margin-top: 16px;
+}
+
+.result {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.result p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.form-error {
+  margin: 12px 0 0;
+  min-height: 0;
+  font-size: 13px;
+}
+
+input[type='file'] {
+  width: 100%;
+}
