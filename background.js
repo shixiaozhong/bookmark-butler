@@ -1,8 +1,9 @@
-// Runs the dead-link scan, which has to outlive the popup: the popup closes as
-// soon as it loses focus. All progress lives in chrome.storage, and the popup
-// follows along through storage.onChanged.
+// Answers address bar searches and runs the dead-link scan. The scan has to outlive
+// the popup, which closes as soon as it loses focus, so all progress lives in
+// chrome.storage and the popup follows along through storage.onChanged.
 import { indexTree } from './lib/bookmarks-model.js';
 import { applyBatch, checkUrl, createJob, Kind, pickBatch } from './lib/link-check.js';
+import { buildSuggestions, resolveEntered } from './lib/omnibox.js';
 
 const JOB_KEY = 'linkCheckJob';
 const RESUME_ALARM = 'link-check-resume';
@@ -134,3 +135,31 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 chrome.runtime.onStartup.addListener(continueInterruptedScan);
 chrome.runtime.onInstalled.addListener(continueInterruptedScan);
+
+/* Address bar: type "b", then a space, then what you're looking for. */
+
+async function allBookmarks() {
+  return indexTree(await chrome.bookmarks.getTree()).bookmarks;
+}
+
+chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
+  try {
+    suggest(buildSuggestions(await allBookmarks(), text));
+  } catch (error) {
+    console.error('Bookmark suggestions failed', error);
+  }
+});
+
+chrome.omnibox.onInputEntered.addListener(async (text, disposition) => {
+  try {
+    const url = resolveEntered(await allBookmarks(), text);
+    if (disposition === 'currentTab') await chrome.tabs.update({ url });
+    else await chrome.tabs.create({ url, active: disposition === 'newForegroundTab' });
+  } catch (error) {
+    console.error('Could not open bookmark', error);
+  }
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.omnibox.setDefaultSuggestion({ description: '搜索书签：<match>%s</match>' });
+});

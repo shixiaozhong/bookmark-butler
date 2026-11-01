@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { canModify, folderOptions, indexTree, searchBookmarks } from '../lib/bookmarks-model.js';
+import { canModify, findEmptyFolders, folderOptions, indexTree, searchBookmarks, topmostInOrder } from '../lib/bookmarks-model.js';
 
 const roots = [
   {
@@ -63,7 +63,8 @@ test('folderOptions lists writable folders by depth and can exclude a subtree', 
     folderOptions(roots).map(({ id, depth }) => [id, depth]),
     [['1', 0], ['11', 1], ['21', 2], ['2', 0]],
   );
-  assert.deepEqual(folderOptions(roots, '11').map(({ id }) => id), ['1', '2']);
+  assert.deepEqual(folderOptions(roots, ['11']).map(({ id }) => id), ['1', '2']);
+  assert.deepEqual(folderOptions(roots, ['11', '2']).map(({ id }) => id), ['1']);
 });
 
 test('searchBookmarks requires every term and ranks title matches first', () => {
@@ -79,4 +80,37 @@ test('searchBookmarks caps items but reports the full total', () => {
   const { items, total } = searchBookmarks(bookmarks, 'https', 1);
   assert.equal(items.length, 1);
   assert.equal(total, 4);
+});
+
+test('topmostInOrder follows tree order and drops anything inside a selected folder', () => {
+  assert.deepEqual(topmostInOrder(roots, ['30', '10']).map((n) => n.id), ['10', '30']);
+  assert.deepEqual(topmostInOrder(roots, ['20', '11', '21']).map((n) => n.id), ['11']);
+  assert.deepEqual(topmostInOrder(roots, []), []);
+  assert.deepEqual(topmostInOrder(roots, ['gone']), []);
+});
+
+test('findEmptyFolders reports the outermost empty folder only', () => {
+  const { nodes } = indexTree([
+    {
+      id: '0',
+      title: '',
+      children: [
+        {
+          id: '1',
+          parentId: '0',
+          title: '书签栏',
+          children: [
+            { id: 'keep', parentId: '1', title: '有内容', children: [{ id: 'b', parentId: 'keep', title: 'B', url: 'https://b.com/' }, { id: 'inner', parentId: 'keep', title: '里面空的', children: [] }] },
+            { id: 'outer', parentId: '1', title: '外层', children: [{ id: 'mid', parentId: 'outer', title: '中层', children: [{ id: 'low', parentId: 'mid', title: '底层', children: [] }] }] },
+          ],
+        },
+        { id: '2', parentId: '0', title: '其他书签', children: [] },
+        { id: '3', parentId: '0', title: '受管理', unmodifiable: 'managed', children: [{ id: 'm', parentId: '3', title: 'M', unmodifiable: 'managed', children: [] }] },
+      ],
+    },
+  ]);
+  const found = findEmptyFolders(nodes);
+  assert.deepEqual(found.map((f) => f.id).sort(), ['inner', 'outer'], 'never top-level or managed folders');
+  assert.equal(found.find((f) => f.id === 'outer').subfolders, 2);
+  assert.equal(found.find((f) => f.id === 'inner').path, '书签栏 / 有内容');
 });

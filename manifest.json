@@ -6,6 +6,7 @@
   "minimum_chrome_version": "123",
   "permissions": ["bookmarks", "storage", "alarms", "favicon"],
   "host_permissions": ["http://*/*", "https://*/*"],
+  "omnibox": { "keyword": "b" },
   "background": {
     "service_worker": "background.js",
     "type": "module"

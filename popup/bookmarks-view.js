@@ -1,7 +1,8 @@
-import { canModify, folderTrail, ROOT_ID, searchBookmarks } from '../lib/bookmarks-model.js';
+import { canHoldChildren, canModify, folderTrail, ROOT_ID, searchBookmarks, topmostInOrder } from '../lib/bookmarks-model.js';
 import { dropZone, resolveDrop, resolveStep } from '../lib/drag.js';
 import { parseHttpUrl } from '../lib/urls.js';
-import { editNodeDialog } from './dialogs.js';
+import { moveNodes, undoMoves } from './actions.js';
+import { editNodeDialog, moveDialog } from './dialogs.js';
 import { favicon, h, icon } from './dom.js';
 
 const SPRING_OPEN_MS = 600;
@@ -18,7 +19,126 @@ export function createBookmarksView(app) {
   const crumbsNav = document.getElementById('crumbs-nav');
   const crumbs = document.getElementById('crumbs');
 
+  const selectionBar = document.getElementById('selection-bar');
+  const selectButton = document.getElementById('select-mode');
+
   let drag = null;
+  let selecting = false;
+  // Selection survives moving between folders and searching, so a set can be built
+  // from several places. Only the last-clicked tile needs remembering for Shift ranges.
+  const selected = new Set();
+  let rangeAnchorId = null;
+
+  /* Selecting */
+
+  const selectedNodes = () => topmostInOrder(app.roots, selected);
+
+  function visibleSelectableIds() {
+    const grid = currentGrid();
+    return grid ? [...grid.querySelectorAll('.tile-check')].map((box) => box.closest('.tile').dataset.id) : [];
+  }
+
+  function updateSelectionBar() {
+    selectionBar.hidden = !selecting;
+    if (!selecting) return;
+    const nothing = selected.size === 0;
+    document.getElementById('selection-count').textContent = `已选 ${selected.size} 项`;
+    document.getElementById('selection-move').disabled = nothing;
+    document.getElementById('selection-delete').disabled = nothing;
+    const visible = visibleSelectableIds();
+    const all = document.getElementById('selection-all');
+    all.textContent = visible.length && visible.every((id) => selected.has(id)) ? '取消全选' : '全选';
+    all.disabled = visible.length === 0;
+  }
+
+  /** Updates tiles in place, so ticking one doesn't rebuild the grid or lose focus. */
+  function syncSelection() {
+    for (const tile of body.querySelectorAll('.grid:not(.drag-stash) .tile')) {
+      const on = selected.has(tile.dataset.id);
+      tile.classList.toggle('selected', on);
+      const box = tile.querySelector('.tile-check');
+      if (box) box.checked = on;
+    }
+    updateSelectionBar();
+  }
+
+  function setSelected(id, on, extendRange) {
+    const visible = visibleSelectableIds();
+    const from = visible.indexOf(rangeAnchorId);
+    const to = visible.indexOf(id);
+    if (extendRange && from >= 0 && to >= 0) {
+      for (const each of visible.slice(Math.min(from, to), Math.max(from, to) + 1)) {
+        if (on) selected.add(each);
+        else selected.delete(each);
+      }
+    } else if (on) {
+      selected.add(id);
+    } else {
+      selected.delete(id);
+    }
+    rangeAnchorId = id;
+    syncSelection();
+  }
+
+  function setSelecting(on) {
+    selecting = on;
+    selected.clear();
+    rangeAnchorId = null;
+    selectButton.setAttribute('aria-pressed', String(on));
+    render();
+    updateSelectionBar();
+  }
+
+  function selectionBox(node) {
+    if (!selecting || !canModify(node)) return null;
+    return h('input', {
+      type: 'checkbox',
+      class: 'tile-check',
+      checked: selected.has(node.id),
+      'aria-label': `选择“${node.title || node.url}”`,
+      onclick: (event) => setSelected(node.id, event.target.checked, event.shiftKey),
+    });
+  }
+
+  function deleteSelection() {
+    const nodes = selectedNodes();
+    const inFolders = nodes.reduce((sum, node) => sum + (node.url === undefined ? (app.index.nodes.get(node.id)?.count ?? 0) : 0), 0);
+    const message = inFolders
+      ? `将删除 ${nodes.length} 项，文件夹里的 ${inFolders} 个书签也会一起删除。`
+      : `将删除 ${nodes.length} 项。`;
+    app.run(async () => {
+      const removed = await app.removeNodes(nodes.map((node) => node.id), { title: '删除所选内容？', message });
+      if (removed) setSelecting(false);
+    });
+  }
+
+  selectButton.addEventListener('click', () => setSelecting(!selecting));
+  document.getElementById('selection-done').addEventListener('click', () => setSelecting(false));
+  document.getElementById('selection-delete').addEventListener('click', deleteSelection);
+  document.getElementById('selection-all').addEventListener('click', () => {
+    const visible = visibleSelectableIds();
+    const clearing = visible.every((id) => selected.has(id));
+    for (const id of visible) {
+      if (clearing) selected.delete(id);
+      else selected.add(id);
+    }
+    syncSelection();
+  });
+  document.getElementById('selection-move').addEventListener('click', () => {
+    const current = app.index.nodes.get(app.folderId);
+    moveDialog({
+      roots: app.roots,
+      nodes: selectedNodes(),
+      parentId: canHoldChildren(current) ? current.id : null,
+      onMove: (destination, title, createdFolderId) =>
+        moveAndReport(selectedNodes(), destination, { title, createdFolderId, endSelection: true }),
+    });
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !selecting || document.querySelector('dialog[open]')) return;
+    event.preventDefault();
+    setSelecting(false);
+  });
 
   /* Tiles */
 
@@ -37,7 +157,7 @@ export function createBookmarksView(app) {
   }
 
   function tileActions(node) {
-    if (!canModify(node)) return null;
+    if (selecting || !canModify(node)) return null;
     const label = node.title || node.url;
     return h(
       'div',
@@ -62,7 +182,14 @@ export function createBookmarksView(app) {
         // Non-web URLs (bookmarklets, chrome://) only ever open through the click handler.
         href: parseHttpUrl(node.url) ? node.url : '#',
         title: `${label}\n${node.url}`,
-        onclick: (event) => open(event, node.url),
+        onclick: (event) => {
+          if (!selecting) {
+            open(event, node.url);
+            return;
+          }
+          event.preventDefault();
+          if (canModify(node)) setSelected(node.id, !selected.has(node.id), event.shiftKey);
+        },
         onauxclick: (event) => {
           if (event.button === 1) open(event, node.url);
         },
@@ -71,7 +198,13 @@ export function createBookmarksView(app) {
       h('span', { class: 'tile-title' }, label),
       showPath ? h('span', { class: 'meta tile-path' }, node.path || node.url) : null,
     );
-    const tile = h('li', { class: 'tile', 'data-id': node.id }, link, tileActions(node));
+    const tile = h(
+      'li',
+      { class: `tile${selecting && selected.has(node.id) ? ' selected' : ''}`, 'data-id': node.id },
+      link,
+      selectionBox(node),
+      tileActions(node),
+    );
     // Search results have no meaningful order, so only a folder's own view can be rearranged.
     if (!showPath && canModify(node)) {
       // A link is draggable by itself and would otherwise take the drag from its tile.
@@ -85,7 +218,7 @@ export function createBookmarksView(app) {
     const count = app.index.nodes.get(node.id)?.count ?? 0;
     const tile = h(
       'li',
-      { class: 'tile', 'data-id': node.id },
+      { class: `tile${selecting && selected.has(node.id) ? ' selected' : ''}`, 'data-id': node.id },
       h(
         'button',
         {
@@ -98,6 +231,7 @@ export function createBookmarksView(app) {
         h('span', { class: 'tile-icon' }, icon('folder', 'folder-icon'), count ? h('span', { class: 'tile-count' }, String(count)) : null),
         h('span', { class: 'tile-title' }, node.title),
       ),
+      selectionBox(node),
       tileActions(node),
     );
     if (canModify(node)) tile.draggable = true;
@@ -168,6 +302,9 @@ export function createBookmarksView(app) {
       drag.renderWhenDone = true;
       return;
     }
+    for (const id of selected) {
+      if (!app.index.nodes.has(id)) selected.delete(id);
+    }
     const { scrollTop } = body;
     // Rebuilding drops focus, which keyboard users would otherwise lose after every change.
     const focusedId = body.contains(document.activeElement)
@@ -183,6 +320,7 @@ export function createBookmarksView(app) {
     }
     body.scrollTop = scrollTop;
     if (focusedId) tileElement(focusedId)?.querySelector('.tile-main')?.focus();
+    updateSelectionBar();
   }
 
   function showFolder(id) {
@@ -200,11 +338,27 @@ export function createBookmarksView(app) {
 
   /* Rearranging */
 
-  async function moveNode(node, destination) {
-    await chrome.bookmarks.move(node.id, destination);
-    if (destination.parentId !== node.parentId) {
-      app.notify(`已移到“${app.index.nodes.get(destination.parentId)?.title}”`);
+  async function moveAndReport(nodes, destination, { title, createdFolderId = null, endSelection = false } = {}) {
+    const label = title ?? app.index.nodes.get(destination.parentId)?.title;
+    const { origins, moved, failed } = await moveNodes(nodes.map((node) => node.id), destination);
+    if (endSelection) setSelecting(false);
+    if (failed) {
+      app.notify(`已移动 ${moved} 项，${failed} 项移动失败`);
+      return;
     }
+    // Reordering within a folder shows for itself. Anything else is easy to lose track of.
+    const leftFolder = nodes.some((node) => node.parentId !== destination.parentId);
+    if (nodes.length === 1 && !leftFolder) return;
+    app.notify(nodes.length > 1 ? `已把 ${nodes.length} 项移到“${label}”` : `已移到“${label}”`, {
+      actionLabel: '撤销',
+      hideAfterMs: 10_000,
+      onAction: async () => {
+        await undoMoves(origins);
+        // Chrome refuses to remove a folder with anything in it, so what you've added since is safe.
+        if (createdFolderId) await chrome.bookmarks.remove(createdFolderId).catch(() => {});
+        app.notify('已撤销移动');
+      },
+    });
   }
 
   function clearDropMarker() {
@@ -240,7 +394,7 @@ export function createBookmarksView(app) {
       el !== body &&
       zone === 'inside' &&
       node.id !== app.folderId &&
-      node.id !== drag.node.id &&
+      !drag.nodes.some((dragged) => dragged.id === node.id) &&
       node.children?.length;
     if (!opensFolder) {
       cancelSpring();
@@ -282,11 +436,23 @@ export function createBookmarksView(app) {
     const tile = event.target.closest?.('.tile[draggable="true"]');
     const node = tile && app.index.nodes.get(tile.dataset.id);
     if (!node) return;
-    drag = { node, tile, destination: null, marked: null, springId: null, springTimer: null, renderWhenDone: false };
+    // Dragging a ticked tile takes all the ticked ones with it. An unticked tile goes alone.
+    const nodes = selecting && selected.has(node.id) ? selectedNodes() : [node];
+    drag = { nodes, tile, destination: null, marked: null, springId: null, springTimer: null, renderWhenDone: false, badge: null };
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', node.url ?? node.title);
+    if (nodes.length > 1) {
+      drag.badge = h('div', { class: 'drag-count' }, `${nodes.length} 项`);
+      document.body.append(drag.badge);
+      event.dataTransfer.setDragImage(drag.badge, 12, 12);
+    }
     // Styled a frame later, or the browser would use the faded tile as the drag image.
-    requestAnimationFrame(() => tile.classList.add('dragging'));
+    const moving = new Set(nodes.map((each) => each.id));
+    requestAnimationFrame(() => {
+      for (const each of body.querySelectorAll('.tile')) {
+        if (moving.has(each.dataset.id)) each.classList.add('dragging');
+      }
+    });
   });
 
   // Chrome allows a drop based on whichever of dragenter and dragover came last,
@@ -302,7 +468,7 @@ export function createBookmarksView(app) {
       return;
     }
     updateSpring(target);
-    const destination = resolveDrop(app.index.nodes, drag.node, target.node, target.zone);
+    const destination = resolveDrop(app.index.nodes, drag.nodes, target.node, target.zone);
     if (!destination) {
       clearDropMarker();
       return;
@@ -329,15 +495,18 @@ export function createBookmarksView(app) {
   panel.addEventListener('drop', (event) => {
     if (!drag?.destination) return;
     event.preventDefault();
-    const { node, destination } = drag;
-    app.run(() => moveNode(node, destination));
+    const { nodes, destination } = drag;
+    // Moving the selection finishes with it. Dragging an unticked tile leaves it alone.
+    const endSelection = selecting && nodes.every((node) => selected.has(node.id));
+    app.run(() => moveAndReport(nodes, destination, { endSelection }));
   });
 
   body.addEventListener('dragend', () => {
     if (!drag) return;
     clearDropMarker();
     cancelSpring();
-    drag.tile.classList.remove('dragging');
+    drag.badge?.remove();
+    for (const each of body.querySelectorAll('.dragging')) each.classList.remove('dragging');
     const entered = body.querySelector('.drag-stash');
     const needsRender = drag.renderWhenDone || entered;
     drag = null;
@@ -370,13 +539,20 @@ export function createBookmarksView(app) {
     const isBack = event.key === 'ArrowLeft' || event.key === 'ArrowUp';
     const isForward = event.key === 'ArrowRight' || event.key === 'ArrowDown';
 
+    if (selecting && event.key === ' ') {
+      event.preventDefault();
+      const node = app.index.nodes.get(current.closest('.tile').dataset.id);
+      if (canModify(node)) setSelected(node.id, !selected.has(node.id), event.shiftKey);
+      return;
+    }
+
     // The keyboard way to do what dragging does.
     if (event.altKey && (isBack || isForward)) {
       event.preventDefault();
       const node = app.index.nodes.get(current.closest('.tile').dataset.id);
       if (search.value.trim() || !canModify(node)) return;
       const destination = resolveStep(app.index.nodes, node, isBack ? 'back' : 'forward');
-      if (destination) app.run(() => moveNode(node, destination));
+      if (destination) app.run(() => moveAndReport([node], destination));
       return;
     }
 

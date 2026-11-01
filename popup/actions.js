@@ -83,6 +83,64 @@ export async function undoRemove() {
   return restored;
 }
 
+/**
+ * Moves nodes to a spot in a folder, keeping their order. `index` is a position
+ * among the folder's current children (the end if left out). Each node is placed
+ * just before the first child that isn't moving, which stays correct as positions
+ * shift. Returns where they came from, for undoMoves.
+ */
+export async function moveNodes(ids, { parentId, index }) {
+  const origins = [];
+  for (const id of ids) {
+    const [{ parentId: from, index: at }] = await chrome.bookmarks.get(id);
+    origins.push({ id, parentId: from, index: at });
+  }
+  const moving = new Set(ids);
+  const siblings = await chrome.bookmarks.getChildren(parentId);
+  const anchorId = siblings.slice(index ?? siblings.length).find((child) => !moving.has(child.id))?.id;
+
+  let moved = 0;
+  for (const id of ids) {
+    try {
+      const position = anchorId
+        ? (await chrome.bookmarks.get(anchorId))[0].index
+        : (await chrome.bookmarks.getChildren(parentId)).length;
+      await chrome.bookmarks.move(id, { parentId, index: position });
+      moved++;
+    } catch (error) {
+      console.error('Could not move bookmark', id, error);
+    }
+  }
+  return { origins, moved, failed: ids.length - moved };
+}
+
+/**
+ * Puts moved nodes back in two passes. Nodes still in their original folder go to
+ * its end first, so none of them sit before a position being filled. Then each one
+ * goes back, lowest position first, which makes every saved position correct when
+ * it's used. Nodes that have since been deleted are skipped.
+ */
+export async function undoMoves(origins) {
+  for (const { id, parentId } of origins) {
+    try {
+      const [current] = await chrome.bookmarks.get(id);
+      if (current.parentId !== parentId) continue;
+      const { length } = await chrome.bookmarks.getChildren(parentId);
+      await chrome.bookmarks.move(id, { parentId, index: length });
+    } catch (error) {
+      console.error('Could not prepare to restore bookmark', id, error);
+    }
+  }
+  const ordered = [...origins].sort((a, b) => a.index - b.index);
+  for (const { id, parentId, index } of ordered) {
+    try {
+      await chrome.bookmarks.move(id, { parentId, index });
+    } catch (error) {
+      console.error('Could not restore bookmark', id, error);
+    }
+  }
+}
+
 export async function openUrl(url, { active = true } = {}) {
   // Chrome refuses these from extensions, with an error that's no use to a reader.
   if (/^javascript:/i.test(url)) throw new Error('小书签只能从 Chrome 书签栏运行');

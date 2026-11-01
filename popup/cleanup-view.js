@@ -1,3 +1,4 @@
+import { findEmptyFolders } from '../lib/bookmarks-model.js';
 import { findDuplicates } from '../lib/duplicates.js';
 import { Kind } from '../lib/link-check.js';
 import { checkRow, h, icon } from './dom.js';
@@ -41,11 +42,14 @@ export function createCleanupView(app) {
   const duplicateSelection = new Set();
   const seenDuplicates = new Set();
   const deadSelection = new Set();
+  const emptySelection = new Set();
+  const seenEmpty = new Set();
   // The scan writes progress constantly; the list rebuilds only when its content changes.
   let renderedDeadList = null;
   let progressEls = null;
 
-  const activeSelection = () => (mode === 'duplicates' ? duplicateSelection : deadSelection);
+  const activeSelection = () =>
+    ({ duplicates: duplicateSelection, dead: deadSelection, empty: emptySelection })[mode];
 
   function updateFooter(visibleIds) {
     const selection = activeSelection();
@@ -113,6 +117,43 @@ export function createCleanupView(app) {
         `发现 ${groups.length} 组。已默认勾选完全相同的副本，每组保留最早收藏的一条；网址相似的不会默认勾选。`,
       ),
       ...sections,
+    );
+  }
+
+  /* Empty folders */
+
+  function renderEmptyFolders() {
+    const folders = findEmptyFolders(app.index.nodes);
+    for (const { id } of folders) {
+      if (seenEmpty.has(id)) continue;
+      seenEmpty.add(id);
+      emptySelection.add(id);
+    }
+    const visibleIds = new Set(folders.map((folder) => folder.id));
+    updateFooter(visibleIds);
+    if (!folders.length) {
+      body.replaceChildren(h('p', { class: 'empty' }, '没有发现空文件夹'));
+      return;
+    }
+    body.replaceChildren(
+      h('p', { class: 'hint' }, `发现 ${folders.length} 个文件夹，里面没有任何书签。如果有想留着备用的，取消勾选就好。`),
+      h(
+        'section',
+        { class: 'group' },
+        folders.map((folder) =>
+          checkRow({
+            title: folder.title,
+            meta: folder.subfolders ? `${folder.path} · 含 ${folder.subfolders} 个空的子文件夹` : folder.path,
+            leading: icon('folder', 'folder-icon'),
+            checked: emptySelection.has(folder.id),
+            onChange: (checked) => {
+              if (checked) emptySelection.add(folder.id);
+              else emptySelection.delete(folder.id);
+              updateFooter(visibleIds);
+            },
+          }),
+        ),
+      ),
     );
   }
 
@@ -289,6 +330,7 @@ export function createCleanupView(app) {
       button.setAttribute('aria-pressed', String(button.dataset.mode === mode));
     }
     if (mode === 'duplicates') renderDuplicates();
+    else if (mode === 'empty') renderEmptyFolders();
     else renderDead({ force: true });
   }
 
@@ -296,6 +338,15 @@ export function createCleanupView(app) {
     const selection = activeSelection();
     const ids = [...selection];
     if (!ids.length) return;
+
+    if (mode === 'empty') {
+      const removed = await app.removeNodes(ids, {
+        title: '删除所选文件夹？',
+        message: `将删除 ${ids.length} 个空文件夹。`,
+      });
+      if (removed) selection.clear();
+      return;
+    }
 
     let message = `将删除 ${ids.length} 个书签。`;
     if (mode === 'duplicates') {

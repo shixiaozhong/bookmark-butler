@@ -32,12 +32,12 @@ export function favicon(url, size = 32) {
 }
 
 /** A row for a checklist: a checkbox plus title and detail line, all inside one label. */
-export function checkRow({ url, title, meta, tag, checked, onChange }) {
+export function checkRow({ url, title, meta, tag, checked, onChange, leading }) {
   return h(
     'label',
     { class: 'check-row' },
     h('input', { type: 'checkbox', checked, onchange: (event) => onChange(event.target.checked) }),
-    favicon(url),
+    leading ?? favicon(url),
     h(
       'span',
       { class: 'row-text' },

@@ -85,8 +85,11 @@ select {
   color: var(--text);
 }
 
-.tabs-end {
+.tabs .icon-button {
   align-self: center;
+}
+
+.tabs-end {
   margin-inline-start: auto;
 }
 
@@ -176,6 +179,10 @@ select {
   background: var(--bg);
   cursor: pointer;
   white-space: nowrap;
+}
+
+.button.compact {
+  padding-inline: 8px;
 }
 
 .button:hover {
@@ -383,6 +390,34 @@ select {
   display: flex;
 }
 
+.tile-check {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-start: 6px;
+  margin: 0;
+}
+
+.tile.selected {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* The picture under the pointer while dragging several items. */
+.drag-count {
+  position: fixed;
+  inset-block-start: -100px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 12px;
+}
+
+#select-mode[aria-pressed='true'] {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
 .tile.dragging {
   opacity: 0.45;
 }
@@ -533,6 +568,12 @@ select {
   border-top: 1px solid var(--border);
 }
 
+.check-row .folder-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
 .check-row input {
   flex: none;
   margin: 0;
@@ -575,6 +616,12 @@ select {
   gap: 8px;
   padding: 8px 10px;
   border-top: 1px solid var(--border);
+}
+
+.footer-actions {
+  display: flex;
+  flex: none;
+  gap: 4px;
 }
 
 /* Notice bar */
@@ -623,6 +670,56 @@ dialog h2 {
 dialog p {
   margin: 0 0 12px;
   overflow-wrap: anywhere;
+}
+
+#help-dialog {
+  width: min(368px, calc(100vw - 32px));
+}
+
+#help-list section {
+  margin-bottom: 12px;
+}
+
+#help-list h3 {
+  margin: 0 0 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#help-list dl {
+  margin: 0;
+}
+
+#help-list dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 24px;
+}
+
+#help-list dt {
+  flex: none;
+  order: 1;
+  color: var(--text-muted);
+}
+
+#help-list dd {
+  margin: 0;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-block-end-width: 2px;
+  border-radius: 4px;
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .field {

@@ -3,7 +3,7 @@ import { parseHttpUrl } from '../lib/urls.js';
 import { discardUndo, getUndoSnapshot, openUrl, removeWithUndo, undoRemove } from './actions.js';
 import { createBookmarksView } from './bookmarks-view.js';
 import { createCleanupView } from './cleanup-view.js';
-import { confirmDialog, createBookmarkDialog, createFolderDialog, editNodeDialog, initEditDialog } from './dialogs.js';
+import { confirmDialog, createBookmarkDialog, createFolderDialog, editNodeDialog, initEditDialog, initEscapeKey, initShortcutHelp } from './dialogs.js';
 
 const UI_KEY = 'uiState';
 
@@ -31,8 +31,8 @@ const app = {
     saveUiState();
   },
 
-  notify(text) {
-    showNotice(text);
+  notify(text, options) {
+    showNotice(text, options);
   },
 
   async removeNode(node) {
@@ -83,7 +83,7 @@ function hideNotice() {
   noticeCloseHandler = null;
 }
 
-function showNotice(text, { actionLabel = null, onAction = null, onClose = null } = {}) {
+function showNotice(text, { actionLabel = null, onAction = null, onClose = null, hideAfterMs = null } = {}) {
   clearTimeout(noticeTimer);
   noticeText.textContent = text;
   noticeAction.textContent = actionLabel ?? '';
@@ -91,8 +91,9 @@ function showNotice(text, { actionLabel = null, onAction = null, onClose = null 
   noticeActionHandler = onAction;
   noticeCloseHandler = onClose;
   notice.hidden = false;
-  // A notice offering an action stays put, since hiding it would take the action away.
-  if (!actionLabel) noticeTimer = setTimeout(hideNotice, 5000);
+  // Without a time given, a notice offering an action stays: hiding it would take the action away.
+  const delay = hideAfterMs ?? (actionLabel ? null : 5000);
+  if (delay) noticeTimer = setTimeout(hideNotice, delay);
 }
 
 noticeAction.addEventListener('click', () => {
@@ -214,6 +215,8 @@ document.getElementById('add-folder').addEventListener('click', () => {
 
 async function init() {
   initEditDialog();
+  initEscapeKey();
+  initShortcutHelp();
   app.roots = await chrome.bookmarks.getTree();
   app.index = indexTree(app.roots);
 

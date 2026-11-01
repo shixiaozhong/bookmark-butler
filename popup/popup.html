@@ -16,30 +16,44 @@
       <symbol id="i-folder-plus" viewBox="0 0 16 16"><path d="M1.75 4.25c0-.7.55-1.25 1.25-1.25h3l1.5 1.75H13c.7 0 1.25.55 1.25 1.25v6c0 .7-.55 1.25-1.25 1.25H3c-.7 0-1.25-.55-1.25-1.25zM8 7.25v3.5M6.25 9h3.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
       <symbol id="i-star-plus" viewBox="0 0 16 16"><path d="m8 2 1.8 3.8 4.2.55-3.05 2.9.8 4.15L8 11.4l-3.75 2 .8-4.15L2 6.35l4.2-.55z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" /></symbol>
       <symbol id="i-transfer" viewBox="0 0 16 16"><path d="M5 13V3M5 3 2.5 5.5M5 3l2.5 2.5M11 3v10M11 13l-2.5-2.5M11 13l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+      <symbol id="i-select" viewBox="0 0 16 16"><path d="M3.25 2.75h9.5c.3 0 .5.2.5.5v9.5c0 .3-.2.5-.5.5h-9.5a.5.5 0 0 1-.5-.5v-9.5c0-.3.2-.5.5-.5zM5.5 8l2 2 3.25-3.75" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+      <symbol id="i-help" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.3" /><path d="M6.1 6.2a1.95 1.95 0 1 1 3 1.65c-.7.45-1.1.85-1.1 1.65" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8" cy="11.6" r=".8" fill="currentColor" /></symbol>
       <symbol id="i-external" viewBox="0 0 16 16"><path d="M9.5 2.75h3.75V6.5M13 3l-6 6M7 3.5H3.25v9.25h9.25V9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
     </svg>
 
     <nav class="tabs" aria-label="视图">
       <button type="button" class="tab" data-view="bookmarks">书签</button>
       <button type="button" class="tab" data-view="cleanup">清理</button>
-      <button type="button" id="open-transfer" class="icon-button small tabs-end" title="导入和导出" aria-label="导入和导出"><svg class="icon"><use href="#i-transfer" /></svg></button>
+      <button type="button" id="open-help" class="icon-button small tabs-end" title="快捷键（?）" aria-label="快捷键"><svg class="icon"><use href="#i-help" /></svg></button>
+      <button type="button" id="open-transfer" class="icon-button small" title="导入和导出" aria-label="导入和导出"><svg class="icon"><use href="#i-transfer" /></svg></button>
     </nav>
 
     <main>
       <section id="bookmarks-panel" class="panel" aria-label="书签">
         <div class="toolbar">
           <input id="search" type="search" placeholder="搜索标题、网址或文件夹" aria-label="搜索书签" autocomplete="off" spellcheck="false" />
+          <button type="button" id="select-mode" class="icon-button" title="多选" aria-label="多选" aria-pressed="false"><svg class="icon"><use href="#i-select" /></svg></button>
           <button type="button" id="add-page" class="icon-button" title="收藏当前页" aria-label="收藏当前页"><svg class="icon"><use href="#i-star-plus" /></svg></button>
           <button type="button" id="add-folder" class="icon-button" title="新建文件夹" aria-label="新建文件夹"><svg class="icon"><use href="#i-folder-plus" /></svg></button>
         </div>
         <nav id="crumbs-nav" aria-label="文件夹路径"><ol id="crumbs" class="crumbs"></ol></nav>
         <div id="bookmarks-body" class="scroller"></div>
+        <div id="selection-bar" class="footer" hidden>
+          <span id="selection-count" role="status"></span>
+          <div class="footer-actions">
+            <button type="button" id="selection-all" class="button compact"></button>
+            <button type="button" id="selection-move" class="button compact">移动</button>
+            <button type="button" id="selection-delete" class="button compact danger">删除</button>
+            <button type="button" id="selection-done" class="button compact">完成</button>
+          </div>
+        </div>
       </section>
 
       <section id="cleanup-panel" class="panel" aria-label="清理" hidden>
         <div class="segments" role="group" aria-label="清理类型">
           <button type="button" class="segment" data-mode="duplicates">重复书签</button>
           <button type="button" class="segment" data-mode="dead">失效链接</button>
+          <button type="button" class="segment" data-mode="empty">空文件夹</button>
         </div>
         <div id="cleanup-body" class="scroller"></div>
         <div id="cleanup-footer" class="footer" hidden>
@@ -74,6 +88,35 @@
         <div class="dialog-actions">
           <button type="button" id="edit-cancel" class="button">取消</button>
           <button type="submit" class="button primary">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="help-dialog" aria-labelledby="help-title" closedby="any">
+      <form method="dialog">
+        <h2 id="help-title">快捷键</h2>
+        <div id="help-list"></div>
+        <div class="dialog-actions">
+          <button class="button" autofocus>知道了</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="move-dialog" aria-labelledby="move-title" closedby="closerequest">
+      <form id="move-form" novalidate>
+        <h2 id="move-title"></h2>
+        <label class="field">
+          <span>移到</span>
+          <select id="move-folder"></select>
+        </label>
+        <label class="field">
+          <span>在这里新建文件夹（可选）</span>
+          <input id="move-new-folder" type="text" autocomplete="off" />
+        </label>
+        <p id="move-error" class="form-error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" id="move-cancel" class="button">取消</button>
+          <button type="submit" class="button primary">移动</button>
         </div>
       </form>
     </dialog>

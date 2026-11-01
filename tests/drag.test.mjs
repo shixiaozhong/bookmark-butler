@@ -59,36 +59,54 @@ test('top-level folders can only be dropped into', () => {
 });
 
 test('reordering uses positions from before the node is taken out', () => {
-  assert.deepEqual(resolveDrop(nodes, get('a'), get('c'), 'before'), { parentId: '1', index: 2 });
-  assert.deepEqual(resolveDrop(nodes, get('a'), get('c'), 'after'), { parentId: '1', index: 3 });
-  assert.deepEqual(resolveDrop(nodes, get('c'), get('a'), 'before'), { parentId: '1', index: 0 });
-  assert.deepEqual(resolveDrop(nodes, get('c'), get('a'), 'after'), { parentId: '1', index: 1 });
+  assert.deepEqual(resolveDrop(nodes, [get('a')], get('c'), 'before'), { parentId: '1', index: 2 });
+  assert.deepEqual(resolveDrop(nodes, [get('a')], get('c'), 'after'), { parentId: '1', index: 3 });
+  assert.deepEqual(resolveDrop(nodes, [get('c')], get('a'), 'before'), { parentId: '1', index: 0 });
+  assert.deepEqual(resolveDrop(nodes, [get('c')], get('a'), 'after'), { parentId: '1', index: 1 });
 });
 
 test('moving into a folder targets its end', () => {
-  assert.deepEqual(resolveDrop(nodes, get('a'), get('f'), 'inside'), { parentId: 'f', index: 2 });
-  assert.deepEqual(resolveDrop(nodes, get('x'), get('a'), 'before'), { parentId: '1', index: 0 });
-  assert.deepEqual(resolveDrop(nodes, get('x'), get('1'), 'inside'), { parentId: '1', index: 4 });
+  assert.deepEqual(resolveDrop(nodes, [get('a')], get('f'), 'inside'), { parentId: 'f', index: 2 });
+  assert.deepEqual(resolveDrop(nodes, [get('x')], get('a'), 'before'), { parentId: '1', index: 0 });
+  assert.deepEqual(resolveDrop(nodes, [get('x')], get('1'), 'inside'), { parentId: '1', index: 4 });
 });
 
 test('a drop that would change nothing is rejected', () => {
-  assert.equal(resolveDrop(nodes, get('b'), get('b'), 'before'), null, 'on itself');
-  assert.equal(resolveDrop(nodes, get('b'), get('a'), 'after'), null, 'already right after it');
-  assert.equal(resolveDrop(nodes, get('b'), get('c'), 'before'), null, 'already right before it');
-  assert.equal(resolveDrop(nodes, get('g'), get('f'), 'inside'), null, 'already last in the folder');
+  assert.equal(resolveDrop(nodes, [get('b')], get('b'), 'before'), null, 'on itself');
+  assert.equal(resolveDrop(nodes, [get('b')], get('a'), 'after'), null, 'already right after it');
+  assert.equal(resolveDrop(nodes, [get('b')], get('c'), 'before'), null, 'already right before it');
+  assert.equal(resolveDrop(nodes, [get('g')], get('f'), 'inside'), null, 'already last in the folder');
 });
 
 test('a folder cannot be dropped into itself or its own subtree', () => {
-  assert.equal(resolveDrop(nodes, get('f'), get('f'), 'inside'), null);
-  assert.equal(resolveDrop(nodes, get('f'), get('g'), 'inside'), null);
-  assert.equal(resolveDrop(nodes, get('f'), get('x'), 'after'), null);
+  assert.equal(resolveDrop(nodes, [get('f')], get('f'), 'inside'), null);
+  assert.equal(resolveDrop(nodes, [get('f')], get('g'), 'inside'), null);
+  assert.equal(resolveDrop(nodes, [get('f')], get('x'), 'after'), null);
 });
 
 test('nothing can land beside top-level folders, in the root or inside managed folders', () => {
-  assert.equal(resolveDrop(nodes, get('a'), get('1'), 'before'), null);
-  assert.equal(resolveDrop(nodes, get('a'), get('0'), 'inside'), null);
-  assert.equal(resolveDrop(nodes, get('a'), get('3'), 'inside'), null);
-  assert.equal(resolveDrop(nodes, get('a'), get('m'), 'after'), null);
+  assert.equal(resolveDrop(nodes, [get('a')], get('1'), 'before'), null);
+  assert.equal(resolveDrop(nodes, [get('a')], get('0'), 'inside'), null);
+  assert.equal(resolveDrop(nodes, [get('a')], get('3'), 'inside'), null);
+  assert.equal(resolveDrop(nodes, [get('a')], get('m'), 'after'), null);
+});
+
+test('a group drops together and is refused if any member would land inside itself', () => {
+  const group = [get('a'), get('c')];
+  assert.deepEqual(resolveDrop(nodes, group, get('f'), 'inside'), { parentId: 'f', index: 2 });
+  assert.equal(resolveDrop(nodes, group, get('a'), 'after'), null, 'on one of its own members');
+  assert.equal(resolveDrop(nodes, [get('a'), get('f')], get('x'), 'after'), null, 'into a selected folder');
+});
+
+test('a group that is already in place stays put, unless it is scattered', () => {
+  const together = [get('a'), get('b')];
+  assert.equal(resolveDrop(nodes, together, get('c'), 'before'), null, 'already right before the target');
+  assert.deepEqual(resolveDrop(nodes, together, get('c'), 'after'), { parentId: '1', index: 3 });
+  assert.deepEqual(
+    resolveDrop(nodes, [get('a'), get('c')], get('b'), 'before'),
+    { parentId: '1', index: 1 },
+    'a scattered group gathers at the target',
+  );
 });
 
 test('resolveStep moves one place and stops at the ends', () => {
