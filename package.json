@@ -2,10 +2,14 @@
   "name": "bookmark-extension",
   "version": "0.2.0",
   "private": true,
+  "engines": {
+    "node": ">=22.2"
+  },
   "type": "module",
   "scripts": {
     "test": "node --test \"tests/*.test.mjs\"",
     "icons": "node scripts/generate-icons.mjs",
-    "package": "node scripts/package.mjs"
+    "package": "npm test && node scripts/package.mjs",
+    "bump": "node scripts/bump.mjs"
   }
 }

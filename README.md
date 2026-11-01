@@ -4,11 +4,12 @@
 
 ## 安装
 
-1. 打开 `chrome://extensions`，开启右上角的“开发者模式”。
-2. 点“加载已解压的扩展程序”，选择本目录。
-3. 把插件固定到工具栏，点图标打开。
+1. 到 [Releases](https://github.com/shixiaozhong/bookmark-butler/releases/latest) 下载最新的 `bookmark-butler-*.zip` 并解压。请保留解压后的文件夹，Chrome 会从这里加载插件。
+2. 打开 `chrome://extensions`，开启右上角的“开发者模式”。
+3. 点“加载已解压的扩展程序”，选择解压后的文件夹。
+4. 把插件固定到工具栏，点图标打开。
 
-改完代码后，在扩展页点插件卡片上的刷新按钮即可生效。
+更新时，下载新版本并替换文件夹内容，再到扩展页点插件卡片上的刷新按钮。
 
 ## 功能
 
@@ -38,8 +39,22 @@
 ```sh
 npm test            # 运行单元测试（只用 Node，无需安装依赖）
 npm run icons       # 重新生成图标
-npm run package     # 打包成 dist/bookmark-butler-<版本号>.zip
+npm run package     # 跑测试，检查版本号，打包成 dist/bookmark-butler-<版本号>.zip
+npm run bump minor  # 升版本号（patch、minor、major 或具体版本），同时改 manifest.json 和 package.json
 ```
+
+需要 Node 22.2 或更高版本。开发时直接加载本目录即可，改完代码后在扩展页点刷新按钮生效。
+
+### 发布新版本
+
+```sh
+npm run bump minor
+git commit -am "Bump version to 0.3.0"
+git tag v0.3.0
+git push && git push --tags
+```
+
+推送标签后，GitHub Actions 会跑测试、打包，并创建附带 zip 的 Release。标签和版本号不一致时会停止发布。
 
 | 路径 | 内容 |
 |---|---|
@@ -49,3 +64,5 @@ npm run package     # 打包成 dist/bookmark-butler-<版本号>.zip
 | `transfer/` | 导入导出页面 |
 | `_locales/` | 界面文字（`en`、`zh_CN`），默认跟随 Chrome 设置，其他语言显示英文 |
 | `tests/` | 单元测试 |
+| `scripts/` | 打包、升版本号和生成图标的脚本 |
+| `.github/` | CI 和自动发布 |

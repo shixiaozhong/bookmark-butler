@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # A branch in this repository already runs on push, so only forks need the pull request run.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 22 is the oldest Node with everything the scripts use. See engines in package.json.
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      # Runs the tests and checks the version numbers before building the zip.
+      - run: npm run package
+      - run: unzip -tq dist/*.zip
+      - uses: actions/upload-artifact@v7
+        if: matrix.node == '24'
+        with:
+          name: extension-zip
+          path: dist/*.zip
+          if-no-files-found: error

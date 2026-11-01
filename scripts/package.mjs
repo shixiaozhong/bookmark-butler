@@ -1,10 +1,12 @@
 // Builds dist/bookmark-butler-<version>.zip holding only what the extension runs on,
 // ready to upload to the Chrome Web Store or unzip and load. No dependencies, so it
 // works anywhere Node does. Timestamps are fixed, so the same files give the same zip.
+// Run it through `npm run package`, which runs the tests first.
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { crc32, deflateRawSync } from 'node:zlib';
+import { readVersion } from './bump.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const INCLUDED = ['manifest.json', 'background.js', '_locales', 'icons', 'lib', 'popup', 'transfer'];
@@ -95,13 +97,14 @@ export function buildZip(entries) {
 }
 
 function main() {
+  const version = readVersion();
   const manifest = JSON.parse(readFileSync(join(ROOT, 'manifest.json'), 'utf8'));
   const files = collectFiles();
   const missing = missingManifestFiles(manifest, files);
   if (missing.length) throw new Error(`The manifest points at missing files: ${missing.join(', ')}`);
 
   const zip = buildZip(files.map((name) => ({ name, data: readFileSync(join(ROOT, name)) })));
-  const output = join(ROOT, 'dist', `bookmark-butler-${manifest.version}.zip`);
+  const output = join(ROOT, 'dist', `bookmark-butler-${version}.zip`);
   if (!existsSync(join(ROOT, 'dist'))) mkdirSync(join(ROOT, 'dist'));
   writeFileSync(output, zip);
   console.log(`${relative(ROOT, output)}: ${files.length} files, ${(zip.length / 1024).toFixed(1)} KB`);
