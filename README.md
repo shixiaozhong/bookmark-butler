@@ -66,3 +66,7 @@ git push && git push --tags
 | `tests/` | 单元测试 |
 | `scripts/` | 打包、升版本号和生成图标的脚本 |
 | `.github/` | CI 和自动发布 |
+
+## 许可证
+
+[MIT](LICENSE)

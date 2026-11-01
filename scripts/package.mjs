@@ -9,7 +9,7 @@ import { crc32, deflateRawSync } from 'node:zlib';
 import { readVersion } from './bump.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
-const INCLUDED = ['manifest.json', 'background.js', '_locales', 'icons', 'lib', 'popup', 'transfer'];
+const INCLUDED = ['LICENSE', 'manifest.json', 'background.js', '_locales', 'icons', 'lib', 'popup', 'transfer'];
 
 // 2026-01-01 00:00 in the DOS format zip files use.
 const DOS_DATE = ((2026 - 1980) << 9) | (1 << 5) | 1;

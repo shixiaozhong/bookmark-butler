@@ -11,6 +11,7 @@ const files = collectFiles();
 
 test('only what the extension runs on is packaged', () => {
   assert.ok(files.includes('manifest.json'));
+  assert.ok(files.includes('LICENSE'), 'the MIT license must travel with copies');
   assert.ok(files.includes('_locales/en/messages.json'));
   assert.ok(files.includes('_locales/zh_CN/messages.json'));
   for (const file of files) {
